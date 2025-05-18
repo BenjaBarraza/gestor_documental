@@ -1,0 +1,140 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestor de Documentos - Login</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f5f5f5;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-card {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #2563eb;
+      margin-bottom: 20px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .back-home a {
+      font-size: 14px;
+      color: #4f46e5;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-home a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .register-link a {
+      color: #4f46e5;
+      text-decoration: none;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="logo">
+        <span style="font-size: 30px;">📁</span>
+        <span>Gestor Docs</span>
+      </div>
+
+      <p class="subtitle">Inicia sesión para acceder a tus documentos</p>
+
+      <div class="back-home">
+        <a href="{% url 'documentos:home' %}">← Volver al inicio</a>
+      </div>
+
+      {% if form.errors %}
+        <div class="error-message">
+          Usuario o contraseña incorrectos.
+        </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="id_username" class="form-label">Nombre de usuario</label>
+          {{ form.username|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <label for="id_password" class="form-label mb-0">Contraseña</label>
+            <a href="#" class="small text-muted">¿Olvidaste tu contraseña?</a>
+          </div>
+          {{ form.password|add_class:"form-control" }}
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="remember" name="remember" />
+          <label class="form-check-label" for="remember">Recordar mi sesión</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
+      </form>
+
+      <div class="register-link">
+        ¿No tienes una cuenta? <a href="{% url 'documentos:registrar' %}">Regístrate</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (opcional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
