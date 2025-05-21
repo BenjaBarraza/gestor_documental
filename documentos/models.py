@@ -4,8 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 class Documento(models.Model):
-    archivo = models.FileField(upload_to='documentos/')
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documentos')  # este se mantiene
     archivo = models.FileField(upload_to='documentos/')
     nombre = models.CharField(max_length=200)
     etiquetas = models.CharField(max_length=100, blank=True)

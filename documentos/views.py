@@ -39,10 +39,10 @@ def subir_documento(request):
     if request.method == 'POST':
         form = DocumentoForm(request.POST, request.FILES)
         if form.is_valid():
-            nuevo_doc = form.save(commit=False)
-            nuevo_doc.usuario = request.user  # Asigna el usuario actual
-            nuevo_doc.save()
-            return redirect('documentos:home')
+            documento = form.save(commit=False)
+            documento.usuario = request.user  # 🔐 asociar con el usuario logueado
+            documento.save()
+            return redirect('documentos:lista')
     else:
         form = DocumentoForm()
     return render(request, 'documentos/subir.html', {'form': form})
@@ -50,7 +50,11 @@ def subir_documento(request):
 # Vista de listado (solo documentos del usuario)
 @login_required
 def listar_documentos(request):
-    documentos = Documento.objects.filter(usuario=request.user)  # ¡Filtro clave!
+    if request.user.is_superuser:
+        documentos = Documento.objects.all()
+    else:
+        documentos = Documento.objects.filter(usuario=request.user)
+
     return render(request, 'documentos/lista.html', {'documentos': documentos})
 
 

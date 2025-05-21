@@ -10,6 +10,21 @@ class DocumentoForm(forms.ModelForm):
         model = Documento
         fields = ['nombre', 'archivo', 'etiquetas']
 
+def clean_archivo(self):
+        archivo = self.cleaned_data.get('archivo')
+        if archivo:
+            # Validación de tamaño (5 MB max)
+            max_tamaño = 5 * 1024 * 1024  # 5 MB
+            if archivo.size > max_tamaño:
+                raise forms.ValidationError("El archivo supera el tamaño máximo de 5 MB.")
+
+            # Validación de tipo
+            tipos_permitidos = ['application/pdf', 'image/jpeg', 'image/png', 'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+            if archivo.content_type not in tipos_permitidos:
+                raise forms.ValidationError("Tipo de archivo no permitido.")
+        return archivo
+
 
 
 TIPO_CUENTA_CHOICES = [

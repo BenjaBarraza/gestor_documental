@@ -56,6 +56,12 @@
     color: #7f8c8d;
     margin-top: 5px;
   }
+
+  .error {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin-top: 6px;
+  }
 </style>
 
 <div class="container my-4">
@@ -71,6 +77,9 @@
       <div class="mb-3">
         <label for="id_nombre" class="form-label">Nombre del documento</label>
         {{ form.nombre|add_class:"form-control" }}
+        {% if form.nombre.errors %}
+          <div class="error">{{ form.nombre.errors.0 }}</div>
+        {% endif %}
         <div class="help-text">Ejemplo: Factura enero 2023</div>
       </div>
 
@@ -83,12 +92,18 @@
             {{ form.archivo }}
           </div>
         </div>
-        <div class="help-text">Formatos soportados: PDF, DOCX, XLSX, JPG, PNG</div>
+        {% if form.archivo.errors %}
+          <div class="error">{{ form.archivo.errors.0 }}</div>
+        {% endif %}
+        <div class="help-text">Formatos soportados: PDF, DOCX, XLSX, JPG, PNG. Máx. 5 MB</div>
       </div>
 
       <div class="mb-3">
         <label for="id_etiquetas" class="form-label">Etiquetas (opcional)</label>
         {{ form.etiquetas|add_class:"form-control" }}
+        {% if form.etiquetas.errors %}
+          <div class="error">{{ form.etiquetas.errors.0 }}</div>
+        {% endif %}
         <div class="help-text">Separa con comas: factura, contrato, cliente-abc</div>
       </div>
 

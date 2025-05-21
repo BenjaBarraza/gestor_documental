@@ -159,15 +159,14 @@
         <li class="document-item">
           <div class="document-info">
             <a href="{% url 'documentos:previsualizar' doc.id %}" class="document-name">📄 {{ doc.nombre }}</a>
+            <small class="text-muted">👤 Subido por: {{ doc.usuario.username }}</small><br>
             <span class="document-date">
               Subido el {{ doc.fecha_subida|date:"d/m/Y" }} a las {{ doc.fecha_subida|date:"H:i" }}
             </span>
           </div>
           <div class="document-actions">
             <span class="document-type">{{ doc.archivo.name|slice:"-4:"|upper }}</span>
-            <button class="delete-btn" onclick='confirmDelete({{ doc.id }}, "{{ doc.nombre|escapejs }}")' title="Eliminar documento">
-              🗑️
-            </button>
+            <button class="delete-btn" onclick='confirmDelete({{ doc.id }}, "{{ doc.nombre|escapejs }}")' title="Eliminar documento">🗑️</button>
           </div>
         </li>
       {% endfor %}
