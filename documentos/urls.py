@@ -12,5 +12,5 @@ urlpatterns = [
     path('previsualizar/<int:documento_id>/', views.previsualizar_documento, name='previsualizar'),
     path('eliminar/<int:documento_id>/', views.eliminar_documento, name='eliminar_documento'),
     path('registro/', views.registrar_usuario, name='registrar'),
-    
+    path('compartir/<uuid:enlace>/', views.compartir_documento, name='compartir_documento'),
 ]

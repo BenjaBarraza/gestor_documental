@@ -1,9 +1,9 @@
 {% extends 'documentos/base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}Subir Documento | Gestor Documental{% endblock %}
 
 {% block content %}
-{% load widget_tweaks %}
 <style>
   .form-container {
     background: white;
@@ -62,11 +62,20 @@
     font-size: 0.9em;
     margin-top: 6px;
   }
+
+  .badge-extension {
+    font-size: 0.75em;
+    background-color: #f0f0f0;
+    color: #555;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-left: 6px;
+  }
 </style>
 
 <div class="container my-4">
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-    <h1 class="h4 text-primary m-0">Subir nuevo documento</h1>
+    <h1 class="h4 text-primary m-0">📤 Subir nuevo documento</h1>
     <a href="{% url 'documentos:home' %}" class="btn btn-secondary">🏠 Inicio</a>
   </div>
 
@@ -75,7 +84,7 @@
       {% csrf_token %}
 
       <div class="mb-3">
-        <label for="id_nombre" class="form-label">Nombre del documento</label>
+        <label for="id_nombre" class="form-label">📌 Nombre del documento</label>
         {{ form.nombre|add_class:"form-control" }}
         {% if form.nombre.errors %}
           <div class="error">{{ form.nombre.errors.0 }}</div>
@@ -84,7 +93,7 @@
       </div>
 
       <div class="mb-3">
-        <label for="id_archivo" class="form-label">Seleccionar archivo</label>
+        <label for="id_archivo" class="form-label">📎 Seleccionar archivo</label>
         <div class="file-input-container">
           <div class="file-input-button">
             <i>📁</i>
@@ -95,16 +104,21 @@
         {% if form.archivo.errors %}
           <div class="error">{{ form.archivo.errors.0 }}</div>
         {% endif %}
-        <div class="help-text">Formatos soportados: PDF, DOCX, XLSX, JPG, PNG. Máx. 5 MB</div>
+        <div class="help-text">
+          Soporta: 
+          <span class="badge bg-primary">PDF</span> 
+          <span class="badge bg-success">JPG</span> 
+          <span class="badge bg-info text-dark">DOCX</span>, etc. Máx. 5 MB
+        </div>
       </div>
 
       <div class="mb-3">
-        <label for="id_etiquetas" class="form-label">Etiquetas (opcional)</label>
+        <label for="id_etiquetas" class="form-label">🏷️ Etiquetas (opcional)</label>
         {{ form.etiquetas|add_class:"form-control" }}
         {% if form.etiquetas.errors %}
           <div class="error">{{ form.etiquetas.errors.0 }}</div>
         {% endif %}
-        <div class="help-text">Separa con comas: factura, contrato, cliente-abc</div>
+        <div class="help-text">Separadas por comas: <code>factura, contrato, cliente-abc</code></div>
       </div>
 
       <div class="d-flex justify-content-between flex-wrap gap-2 mt-4">

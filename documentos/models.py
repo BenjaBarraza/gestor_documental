@@ -2,13 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+import uuid
 
 class Documento(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documentos')  # este se mantiene
-    archivo = models.FileField(upload_to='documentos/')
     nombre = models.CharField(max_length=200)
+    archivo = models.FileField(upload_to='documentos/')
     etiquetas = models.CharField(max_length=100, blank=True)
     fecha_subida = models.DateTimeField(auto_now_add=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    enlace_publico = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -30,3 +32,4 @@ class PerfilUsuario(models.Model):
     def crear_perfil_usuario(sender, instance, created, **kwargs):
         if created:
             PerfilUsuario.objects.create(user=instance)
+

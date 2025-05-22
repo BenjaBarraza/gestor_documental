@@ -8,8 +8,21 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .forms import RegistroUsuarioForm
 from django.db.models import Q
+from django.http import HttpResponseForbidden
 
 # Vista de subida (solo para logueados)
+
+def compartir_documento(request, enlace):
+    documento = get_object_or_404(Documento, enlace_publico=enlace)
+
+    es_pdf = documento.archivo.name.lower().endswith('.pdf')
+    es_imagen = documento.archivo.name.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))
+
+    return render(request, 'documentos/compartido.html', {
+        'documento': documento,
+        'es_pdf': es_pdf,
+        'es_imagen': es_imagen,
+    })
 
 
 def home(request):
@@ -55,20 +68,35 @@ def listar_documentos(request):
     else:
         documentos = Documento.objects.filter(usuario=request.user)
 
+    # 👇 Agrega esta parte para dividir las etiquetas antes de enviar a la plantilla
+    for doc in documentos:
+        if doc.etiquetas:
+            doc.etiquetas_lista = [e.strip() for e in doc.etiquetas.split(',')]
+        else:
+            doc.etiquetas_lista = []
+
     return render(request, 'documentos/lista.html', {'documentos': documentos})
+
 
 
 @login_required
 def buscar_documentos(request):
-    query = request.GET.get('q', '')
-    documentos = Documento.objects.filter(
-        Q(nombre__icontains=query) | 
-        Q(etiquetas__icontains=query),
-        usuario=request.user  # Filtra solo documentos del usuario
-    )
+    query = request.GET.get("q", "").strip()
+    documentos = Documento.objects.none()
+
+    if query:
+        documentos = Documento.objects.filter(
+            Q(nombre__icontains=query) |
+            Q(etiquetas__icontains=query) |
+            Q(archivo__iendswith=query)  # ejemplo: "pdf" o ".pdf"
+        )
+
+        if not request.user.is_superuser:
+            documentos = documentos.filter(usuario=request.user)
+
     return render(request, 'documentos/resultados_busqueda.html', {
         'documentos': documentos,
-        'query': query
+        'query': query,
     })
 
 
@@ -96,6 +124,9 @@ def eliminar_documento(request, documento_id):
         return JsonResponse({'status': 'error', 'message': 'Documento no encontrado'}, status=404)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+
+    
     
 
 

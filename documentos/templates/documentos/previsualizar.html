@@ -1,4 +1,6 @@
 {% extends 'documentos/base.html' %}
+{% load static %}
+{% load etiquetas_tags %}
 
 {% block title %}Previsualizar: {{ documento.nombre }} | Gestor Documental{% endblock %}
 
@@ -8,8 +10,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
     flex-wrap: wrap;
+    margin-bottom: 25px;
     gap: 15px;
   }
 
@@ -29,6 +31,21 @@
     overflow: hidden;
     background: white;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 30px;
+    text-align: center;
+  }
+
+  .document-image {
+    max-width: 100%;
+    max-height: 80vh;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  }
+
+  .badge-tag {
+    font-size: 0.8em;
+    margin-right: 5px;
   }
 
   .actions {
@@ -70,40 +87,7 @@
     margin: 20px 0;
     border-left: 4px solid #e74c3c;
   }
-
-  .error-box ul {
-    padding-left: 20px;
-    margin: 10px 0;
-  }
-
-  .error-box a {
-    color: #721c24;
-    text-decoration: underline;
-    font-weight: 500;
-  }
-
-  #pdf-viewer {
-    width: 100%;
-    height: 75vh;
-    min-height: 500px;
-    border: none;
-  }
-
-  .document-image {
-    max-width: 100%;
-    max-height: 80vh;
-    display: block;
-    margin: 0 auto;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-  }
-
-  @media (max-width: 768px) {
-    #pdf-viewer {
-      height: 60vh;
-      min-height: 400px;
-    }
-  }
-
+</style>
 
 <div class="header">
   <div>
@@ -113,43 +97,30 @@
       <span>Tipo: {{ documento.archivo.name|slice:"-4:"|upper }}</span>
       <span>Tamaño: {{ documento.archivo.size|filesizeformat }}</span>
     </div>
+
+    {% if documento.etiquetas %}
+      <div class="mt-2">
+        {% for etiqueta in documento.etiquetas|split_comas %}
+          <span class="badge bg-secondary badge-tag">{{ etiqueta|trim }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
+
   <a href="{% url 'documentos:home' %}" class="btn btn-secondary">🏠 Inicio</a>
 </div>
 
-<!-- PDF -->
+<!-- Vista previa -->
 {% if es_pdf %}
   <div class="viewer-container">
-    <iframe 
-      src="{{ documento.archivo.url }}#toolbar=0&navpanes=0&scrollbar=0"
-      id="pdf-viewer"
-      onerror="pdfViewerFailed()"
-      title="Vista previa de {{ documento.nombre }}">
-    </iframe>
+    <p>Este archivo es un PDF. Puedes abrirlo en una nueva pestaña para visualizarlo:</p>
+    <a href="{{ documento.archivo.url }}" target="_blank" class="btn btn-primary">📄 Ver documento en pestaña nueva</a>
   </div>
-  <div id="pdf-fallback" class="error-box" style="display: none;">
-    <h3>No se puede mostrar la vista previa</h3>
-    <p>Intenta alguna de estas opciones:</p>
-    <ul>
-      <li><a href="{{ documento.archivo.url }}" download>Descargar el documento</a></li>
-      <li><a href="{{ documento.archivo.url }}" target="_blank">Abrir en nueva ventana</a></li>
-      <li><a href="https://get.adobe.com/reader/" target="_blank">Instalar Adobe Reader</a></li>
-    </ul>
-  </div>
-{% endif %}
-
-<!-- Imágenes -->
-{% if es_imagen %}
+{% elif es_imagen %}
   <div class="viewer-container text-center">
-    <img src="{{ documento.archivo.url }}" alt="{{ documento.nombre }}" class="document-image" onerror="imageViewerFailed(this)">
+    <img src="{{ documento.archivo.url }}" alt="{{ documento.nombre }}" class="document-image img-fluid">
   </div>
-  <div id="image-fallback" class="error-box" style="display: none;">
-    <p>No se puede cargar la imagen. <a href="{{ documento.archivo.url }}" download>Descargar archivo</a></p>
-  </div>
-{% endif %}
-
-<!-- Otros formatos -->
-{% if not es_pdf and not es_imagen %}
+{% else %}
   <div class="error-box">
     <h3>Formato no soportado para previsualización</h3>
     <p>Este tipo de archivo no puede mostrarse directamente en el navegador.</p>
@@ -162,41 +133,19 @@
 <div class="actions">
   <a href="{% url 'documentos:lista' %}" class="btn btn-secondary">← Volver a la lista</a>
   <a href="{{ documento.archivo.url }}" download class="btn btn-success">⬇️ Descargar</a>
-  {% if es_pdf %}
-    <button onclick="printPDF()" class="btn btn-primary">🖨️ Imprimir</button>
+  {% if documento.enlace_publico %}
+    <button class="btn btn-primary" onclick="copiarEnlace()">🔗 Copiar enlace público</button>
   {% endif %}
 </div>
 
 <script>
-  function pdfViewerFailed() {
-    const viewer = document.getElementById('pdf-viewer');
-    const fallback = document.getElementById('pdf-fallback');
-    if (viewer) viewer.style.display = 'none';
-    if (fallback) fallback.style.display = 'block';
-    window.open("{{ documento.archivo.url }}", '_blank');
-  }
-
-  function imageViewerFailed(imgElement) {
-    const fallback = document.getElementById('image-fallback');
-    imgElement.style.display = 'none';
-    if (fallback) fallback.style.display = 'block';
-  }
-
-  setTimeout(function () {
-    const viewer = document.getElementById('pdf-viewer');
-    if (viewer && viewer.clientHeight === 0) {
-      pdfViewerFailed();
-    }
-  }, 3000);
-
-  function printPDF() {
-    const pdfUrl = "{{ documento.archivo.url }}";
-    const printWindow = window.open(pdfUrl, '_blank');
-    printWindow.onload = function () {
-      setTimeout(() => {
-        printWindow.print();
-      }, 500);
-    };
+  function copiarEnlace() {
+    const url = `${window.location.origin}/publico/{{ documento.enlace_publico }}`;
+    navigator.clipboard.writeText(url).then(() => {
+      alert('🔗 Enlace copiado: ' + url);
+    }).catch(err => {
+      alert('Error al copiar el enlace.');
+    });
   }
 </script>
 {% endblock %}
