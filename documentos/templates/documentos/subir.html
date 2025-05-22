@@ -98,19 +98,22 @@
           <div class="file-input-button">
             <i>📁</i>
             <span>Haz clic para seleccionar un archivo</span>
-            {{ form.archivo }}
+            <input type="file" name="archivo" id="id_archivo" required
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.heic,.heif,.webp,.mp4,.zip,.rar,.7z">
           </div>
         </div>
         {% if form.archivo.errors %}
           <div class="error">{{ form.archivo.errors.0 }}</div>
         {% endif %}
         <div class="help-text">
-          Soporta: 
-          <span class="badge bg-primary">PDF</span> 
-          <span class="badge bg-success">JPG</span> 
-          <span class="badge bg-info text-dark">DOCX</span>, etc. Máx. 5 MB
+          Soporta:
+          <span class="badge bg-primary">PDF</span>
+          <span class="badge bg-success">JPG</span>
+          <span class="badge bg-info text-dark">DOCX</span>,
+          <span class="badge bg-warning text-dark">HEIC</span>, etc. Máx. 100 MB
         </div>
       </div>
+
 
       <div class="mb-3">
         <label for="id_etiquetas" class="form-label">🏷️ Etiquetas (opcional)</label>

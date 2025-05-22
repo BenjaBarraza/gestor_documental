@@ -14,22 +14,24 @@ class DocumentoForm(forms.ModelForm):
     def clean_archivo(self):
         archivo = self.cleaned_data.get('archivo')
         if archivo:
-            # Validación de tamaño (ahora 100 MB máx)
+            # Validación de tamaño (100 MB máx)
             max_tamaño = 100 * 1024 * 1024  # 100 MB
             if archivo.size > max_tamaño:
                 raise forms.ValidationError("El archivo supera el tamaño máximo de 100 MB.")
 
-            # Validación de tipo: incluye videos
+            # Tipos MIME permitidos, incluyendo HEIC/HEIF y formatos móviles
             tipos_permitidos = [
                 'application/pdf',
-                'image/jpeg', 'image/png',
+                'image/jpeg', 'image/png', 'image/heic', 'image/heif', 'image/webp',
                 'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'video/mp4', 'video/webm', 'video/ogg'
+                'video/mp4', 'video/webm', 'video/ogg',
+                'application/octet-stream'  # usado en móviles cuando no se detecta el MIME correctamente
             ]
             if archivo.content_type not in tipos_permitidos:
-                raise forms.ValidationError("Tipo de archivo no permitido.")
+                raise forms.ValidationError(f"Tipo de archivo no permitido: {archivo.content_type}")
         return archivo
+
 
 
 # ------------------------------
