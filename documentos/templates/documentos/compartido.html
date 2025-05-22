@@ -1,24 +1,45 @@
 {% extends 'documentos/base.html' %}
 
-{% block title %}Documento Compartido | Gestor Documental{% endblock %}
+{% block title %}Documento Compartido{% endblock %}
 
 {% block content %}
-<div class="container my-5 text-center">
-  <h2 class="mb-3 text-primary">📄 {{ documento.nombre }}</h2>
-  <p class="text-muted">Tamaño: {{ documento.archivo.size|filesizeformat }} | Subido el {{ documento.fecha_subida|date:"d/m/Y" }}</p>
+<div class="container mt-5">
+  <div class="text-center">
+    <h2 class="text-success mb-3">📄 Documento compartido</h2>
+    <p class="text-muted">Estás viendo un documento compartido públicamente.</p>
+  </div>
 
-  {% if es_pdf %}
-    <div class="ratio ratio-4x3 shadow-sm border mb-4">
-      <iframe src="{{ documento.archivo.url }}" frameborder="0" allowfullscreen></iframe>
-    </div>
-  {% elif es_imagen %}
-    <img src="{{ documento.archivo.url }}" alt="{{ documento.nombre }}" class="img-fluid shadow mb-4">
-  {% else %}
-    <div class="alert alert-warning">
-      Este archivo no puede visualizarse directamente. Puedes descargarlo.
-    </div>
-  {% endif %}
+  <div class="card shadow-sm mt-4">
+    <div class="card-body text-center">
+      <h5 class="card-title">{{ documento.nombre }}</h5>
+      <p class="card-text">Tipo: {{ documento.archivo.name|slice:"-4:"|upper }}</p>
+      <p class="card-text text-muted">Tamaño: {{ documento.archivo.size|filesizeformat }}</p>
 
-  <a href="{{ documento.archivo.url }}" class="btn btn-success" download>⬇️ Descargar documento</a>
+      <a href="{{ documento.archivo.url }}" class="btn btn-primary mt-2" target="_blank">👁️ Ver documento</a>
+      <a href="{{ documento.archivo.url }}" class="btn btn-success mt-2" download>⬇️ Descargar</a>
+      {% if documento.fecha_expiracion %}
+        <p class="text-muted">📅 Este enlace expirará el {{ documento.fecha_expiracion|date:"d/m/Y H:i" }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mt-4 text-center">
+    <a href="{% url 'documentos:home' %}" class="btn btn-secondary">🏠 Volver al inicio</a>
+  </div>
 </div>
+
+{% if documento.fecha_expiracion %}
+<script>
+  const expiracion = new Date("{{ documento.fecha_expiracion|date:'Y-m-d H:i:s' }}");
+  const ahora = new Date();
+
+  const milisegundosRestantes = expiracion - ahora;
+
+  if (milisegundosRestantes > 0) {
+    setTimeout(() => {
+      window.location.reload();
+    }, milisegundosRestantes);
+  }
+</script>
+{% endif %}
 {% endblock %}

@@ -1,6 +1,10 @@
+from datetime import timedelta
+import mimetypes
 import os
+import uuid
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from documentos.models import Documento
 from .forms import DocumentoForm 
 from django.shortcuts import get_object_or_404
@@ -8,7 +12,12 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .forms import RegistroUsuarioForm
 from django.db.models import Q
-from django.http import HttpResponseForbidden
+from .forms import EnlacePublicoForm
+from django.utils import timezone
+from django.utils.timezone import now
+from django.contrib import messages
+
+
 
 # Vista de subida (solo para logueados)
 
@@ -102,15 +111,19 @@ def buscar_documentos(request):
 
 @login_required
 def previsualizar_documento(request, documento_id):
-    documento = get_object_or_404(Documento, id=documento_id, usuario=request.user)  # Solo dueño puede ver
-    extension = documento.archivo.name.split('.')[-1].lower()  # Obtener extensión (.pdf, .png, etc.)
-    
+    documento = get_object_or_404(Documento, id=documento_id, usuario=request.user)
+    mimetype, _ = mimetypes.guess_type(documento.archivo.url)
+
+    es_pdf = mimetype == 'application/pdf'
+    es_imagen = mimetype and mimetype.startswith('image/')
+    es_video = mimetype and mimetype.startswith('video/')
+
     return render(request, 'documentos/previsualizar.html', {
         'documento': documento,
-        'es_pdf': extension == 'pdf',
-        'es_imagen': extension in ['jpg', 'jpeg', 'png', 'gif'],
+        'es_pdf': es_pdf,
+        'es_imagen': es_imagen,
+        'es_video': es_video,
     })
-
 
 @require_POST
 @login_required
@@ -126,7 +139,62 @@ def eliminar_documento(request, documento_id):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     
 
-    
+@login_required
+def generar_enlace(request, doc_id):
+    documento = get_object_or_404(Documento, id=doc_id, usuario=request.user)
+
+    if request.method == 'POST':
+        form = EnlacePublicoForm(request.POST)
+        if form.is_valid():
+            documento.fecha_expiracion = form.cleaned_data['fecha_expiracion']
+            documento.enlace_publico = str(uuid.uuid4())
+            documento.save()
+
+            # Guarda el enlace en sesión
+            request.session['enlace_generado'] = request.build_absolute_uri(
+                reverse('documentos:documento_publico', args=[str(documento.enlace_publico)])
+            )
+
+            return redirect('documentos:generar_enlace', doc_id=documento.id)
+    else:
+        form = EnlacePublicoForm(initial={'fecha_expiracion': documento.fecha_expiracion})
+
+    # Recupera el enlace generado desde sesión si existe
+    enlace_generado = request.session.pop('enlace_generado', None)
+
+    return render(request, 'documentos/generar_enlace.html', {
+        'documento': documento,
+        'form': form,
+        'enlace_generado': enlace_generado
+    })
+
+
+def documento_publico(request, enlace):
+    documento = get_object_or_404(Documento, enlace_publico=enlace)
+
+    # Validar expiración
+    if documento.fecha_expiracion and timezone.now() > documento.fecha_expiracion:
+        return render(request, 'documentos/enlace_expirado.html')
+
+    return render(request, 'documentos/compartido.html', {'documento': documento})
+
+
+@login_required
+def mis_enlaces(request):
+    documentos = Documento.objects.filter(usuario=request.user).exclude(enlace_publico__isnull=True)
+    return render(request, 'documentos/mis_enlaces.html', {
+        'documentos': documentos,
+        'ahora': now()
+    })
+
+@login_required
+def eliminar_enlace_publico(request, doc_id):
+    documento = get_object_or_404(Documento, id=doc_id, usuario=request.user)
+    documento.enlace_publico = None
+    documento.fecha_expiracion = None
+    documento.save()
+    messages.success(request, f"El enlace del documento «{documento.nombre}» fue eliminado correctamente.")
+    return redirect('documentos:mis_enlaces')
     
 
 

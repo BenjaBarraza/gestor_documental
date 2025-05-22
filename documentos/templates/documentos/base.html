@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <title>{% block title %}Gestor Documental{% endblock %}</title>
 
-    <!-- Viewport responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Bootstrap CSS -->
@@ -15,12 +14,19 @@
 
     <style>
         body {
-            padding-top: 70px; /* espacio para navbar fija */
+            padding-top: 70px;
         }
 
         .navbar-brand span {
             font-weight: bold;
             font-size: 1.2rem;
+        }
+
+        @media (max-width: 576px) {
+            .navbar .btn {
+                width: 100%;
+                margin-top: 5px;
+            }
         }
     </style>
 </head>
@@ -35,20 +41,37 @@
         <span class="ms-2">Gestor Docs</span>
     </a>
 
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center flex-wrap gap-2">
       {% if user.is_authenticated %}
-        <span class="me-2 text-truncate d-none d-md-inline">👤 {{ user.username }}</span>
-        <form method="post" action="{% url 'logout' %}">
+        <span class="me-2 text-truncate fw-semibold text-dark">👤 {{ user.username }}</span>
+
+        <a href="{% url 'documentos:mis_enlaces' %}" class="btn btn-secondary btn-sm fw-semibold">
+          🔗 Mis Enlaces Públicos
+        </a>
+
+        <form method="post" action="{% url 'logout' %}" class="d-inline">
           {% csrf_token %}
-          <button type="submit" class="btn btn-outline-danger btn-sm fw-semibold">Cerrar sesión</button>
+          <button type="submit" class="btn btn-danger btn-sm fw-semibold">Cerrar sesión</button>
         </form>
       {% else %}
-        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">Iniciar sesión</a>
-        <a href="{% url 'documentos:registrar' %}" class="btn btn-outline-success btn-sm">Registrarse</a>
+        <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Iniciar sesión</a>
+        <a href="{% url 'documentos:registrar' %}" class="btn btn-success btn-sm">Registrarse</a>
       {% endif %}
     </div>
   </div>
 </nav>
+
+<!-- MENSAJES -->
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-center" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 
 <!-- CONTENIDO -->
 <div class="container-fluid px-3 my-4 flex-grow-1">
@@ -56,7 +79,7 @@
   {% endblock %}
 </div>
 
-<!-- FOOTER fijo abajo -->
+<!-- FOOTER -->
 <footer class="bg-light text-center text-muted py-3 border-top mt-auto">
   <div class="container">
     <small>

@@ -120,6 +120,13 @@
   <div class="viewer-container text-center">
     <img src="{{ documento.archivo.url }}" alt="{{ documento.nombre }}" class="document-image img-fluid">
   </div>
+  {% elif es_video %}
+  <div class="viewer-container text-center">
+    <video controls width="100%" height="auto" style="max-height: 80vh;">
+      <source src="{{ documento.archivo.url }}" type="video/mp4">
+      Tu navegador no soporta la reproducción de video.
+    </video>
+  </div>
 {% else %}
   <div class="error-box">
     <h3>Formato no soportado para previsualización</h3>
@@ -133,9 +140,14 @@
 <div class="actions">
   <a href="{% url 'documentos:lista' %}" class="btn btn-secondary">← Volver a la lista</a>
   <a href="{{ documento.archivo.url }}" download class="btn btn-success">⬇️ Descargar</a>
+
   {% if documento.enlace_publico %}
-    <button class="btn btn-primary" onclick="copiarEnlace()">🔗 Copiar enlace público</button>
+    <!-- <button class="btn btn-primary" onclick="copiarEnlace()">🔗 Copiar enlace público</button> -->
   {% endif %}
+
+  <a href="{% url 'documentos:generar_enlace' doc_id=documento.id %}" class="btn btn-secondary">
+    🕒 Generar enlace público
+  </a>
 </div>
 
 <script>

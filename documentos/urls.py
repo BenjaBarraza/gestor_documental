@@ -13,4 +13,10 @@ urlpatterns = [
     path('eliminar/<int:documento_id>/', views.eliminar_documento, name='eliminar_documento'),
     path('registro/', views.registrar_usuario, name='registrar'),
     path('compartir/<uuid:enlace>/', views.compartir_documento, name='compartir_documento'),
+    path('generar-enlace/<int:doc_id>/', views.generar_enlace, name='generar_enlace'),
+    path('publico/<str:enlace>/', views.documento_publico, name='documento_publico'),
+    path('compartido/<str:enlace>/', views.documento_publico, name='documento_publico'),
+    path('publico/<uuid:enlace>/', views.documento_publico, name='documento_publico'),
+    path('mis-enlaces/', views.mis_enlaces, name='mis_enlaces'),
+    path('eliminar-enlace/<int:doc_id>/', views.eliminar_enlace_publico, name='eliminar_enlace_publico'),
 ]

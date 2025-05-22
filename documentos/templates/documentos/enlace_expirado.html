@@ -1,0 +1,53 @@
+{% extends 'documentos/base.html' %}
+
+{% block title %}Enlace Expirado | Gestor Documental{% endblock %}
+
+{% block content %}
+<style>
+  .expired-container {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 40px;
+    background-color: #fff3f3;
+    border: 1px solid #ffcccc;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .expired-icon {
+    font-size: 3.5rem;
+    color: #e74c3c;
+    margin-bottom: 20px;
+  }
+
+  .expired-title {
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: #c0392b;
+    margin-bottom: 10px;
+  }
+
+  .expired-text {
+    font-size: 1.05rem;
+    color: #555;
+    margin-bottom: 30px;
+  }
+
+  .btn-home {
+    padding: 12px 25px;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+</style>
+
+<div class="expired-container">
+  <div class="expired-icon">❌</div>
+  <div class="expired-title">Enlace inválido o expirado</div>
+  <p class="expired-text">
+    El enlace al documento que intentas acceder ya no está disponible.<br>
+    Puede haber <strong>expirado</strong> o haber sido <strong>eliminado</strong> por el propietario.
+  </p>
+  <a href="{% url 'documentos:home' %}" class="btn btn-primary btn-home">🏠 Volver al inicio</a>
+</div>
+{% endblock %}

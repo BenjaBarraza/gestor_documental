@@ -1,0 +1,101 @@
+{% extends 'documentos/base.html' %}
+{% block title %}Mis Enlaces Públicos{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2 class="text-primary mb-4 text-center">🔗 Mis Enlaces Públicos</h2>
+
+  {% if documentos %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle shadow-sm text-center">
+        <thead class="table-light">
+          <tr>
+            <th>📄 Documento</th>
+            <th>Enlace Público</th>
+            <th>Expira</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in documentos %}
+            <tr>
+              <td>{{ doc.nombre }}</td>
+              <td>
+                <code id="enlace-{{ doc.id }}" style="font-size: 0.85rem;">
+                  {{ request.scheme }}://{{ request.get_host }}/publico/{{ doc.enlace_publico }}
+                </code>
+              </td>
+              <td>{{ doc.fecha_expiracion|date:"d/m/Y H:i" }}</td>
+              <td>
+                {% if doc.fecha_expiracion and doc.fecha_expiracion < ahora %}
+                  <span class="badge bg-danger">Expirado</span>
+                {% else %}
+                  <span class="badge bg-success">Activo</span>
+                {% endif %}
+              </td>
+              <td class="d-flex flex-wrap justify-content-center gap-2">
+
+                {% if doc.fecha_expiracion and doc.fecha_expiracion < ahora %}
+                  <button class="btn btn-sm btn-outline-secondary" disabled>📋 Copiar</button>
+                {% else %}
+                  <button class="btn btn-sm btn-outline-primary" onclick="copiarEnlace({{ doc.id }})">📋 Copiar</button>
+                {% endif %}
+
+                <!-- Botón que activa el modal -->
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ doc.id }}">
+                  🗑️ Eliminar
+                </button>
+
+                <!-- Modal Bootstrap para confirmar eliminación -->
+                <div class="modal fade" id="modalEliminar{{ doc.id }}" tabindex="-1" aria-labelledby="modalLabel{{ doc.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel{{ doc.id }}">¿Eliminar enlace?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                      </div>
+                      <div class="modal-body">
+                        ¿Estás seguro de eliminar el enlace público llamado <strong>{{ doc.nombre }}</strong>?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form method="post" action="{% url 'documentos:eliminar_enlace_publico' doc.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Fin Modal -->
+
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-warning text-center">
+      No has generado enlaces públicos aún.
+    </div>
+  {% endif %}
+
+  <div class="text-center mt-4 d-flex justify-content-center flex-wrap gap-2">
+    <a href="{% url 'documentos:lista' %}" class="btn btn-secondary">← Volver a documentos</a>
+    <a href="{% url 'documentos:home' %}" class="btn btn-dark">🏠 Ir al inicio</a>
+  </div>
+</div>
+
+<script>
+  function copiarEnlace(id) {
+    const texto = document.getElementById('enlace-' + id).textContent;
+    navigator.clipboard.writeText(texto).then(() => {
+      alert("Enlace copiado: " + texto);
+    }).catch(() => {
+      alert("Error al copiar el enlace.");
+    });
+  }
+</script>
+{% endblock %}
