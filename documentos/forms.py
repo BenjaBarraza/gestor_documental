@@ -22,14 +22,19 @@ class DocumentoForm(forms.ModelForm):
             # Validación de tipo: incluye videos
             tipos_permitidos = [
                 'application/pdf',
-                'image/jpeg', 'image/png',
+                'image/jpeg', 'image/png', 'image/heic', 'image/heif',
                 'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'video/mp4', 'video/webm', 'video/ogg'
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/zip',
+                'video/mp4', 'video/webm', 'video/ogg',
+                'application/octet-stream'  # usado por algunos móviles
             ]
+
             if archivo.content_type not in tipos_permitidos:
-                raise forms.ValidationError("Tipo de archivo no permitido.")
-        return archivo
+                raise forms.ValidationError(f"Tipo de archivo no permitido: {archivo.content_type}")
+
 
 
 # ------------------------------
