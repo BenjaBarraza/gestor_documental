@@ -66,7 +66,7 @@
     <h1>¡Bienvenido/a, {{ usuario.first_name|default:usuario.username }}!</h1>
     <p>Tu cuenta en <strong>Gestor Docs</strong> está lista para comenzar a organizar y compartir tus documentos de forma segura y eficiente.</p>
 
-    <a class="btn" href="https://{{ request.get_host }}/">🌐 Acceder al sistema</a>
+    <a href="{{ request.scheme }}://{{ request.get_host }}/" class="btn">🌐 Acceder al sistema</a>
 
     <div class="footer">
       Este mensaje fue enviado automáticamente por el sistema de gestión documental de BenjaTech 🚀
