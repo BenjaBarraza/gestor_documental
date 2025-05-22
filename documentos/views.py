@@ -56,18 +56,32 @@ def registrar_usuario(request):
     return render(request, 'documentos/registro.html', {'form': form})
 
 
+from django.contrib import messages  # Asegúrate de tener esta línea en tus imports
+
 @login_required
 def subir_documento(request):
     if request.method == 'POST':
         form = DocumentoForm(request.POST, request.FILES)
         if form.is_valid():
             documento = form.save(commit=False)
-            documento.usuario = request.user  # 🔐 asociar con el usuario logueado
+            documento.usuario = request.user
             documento.save()
+
+            # Mensaje si el archivo fue .heic y se convirtió a .jpg
+            if (
+                form.cleaned_data['archivo'].name.lower().endswith('.jpg') and
+                request.FILES['archivo'].name.lower().endswith('.heic')
+            ):
+                messages.info(
+                    request,
+                    "El archivo .HEIC fue convertido automáticamente a .JPG para que puedas visualizarlo en tu navegador."
+                )
+
             return redirect('documentos:lista')
     else:
         form = DocumentoForm()
     return render(request, 'documentos/subir.html', {'form': form})
+
 
 # Vista de listado (solo documentos del usuario)
 @login_required
