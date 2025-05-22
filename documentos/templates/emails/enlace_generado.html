@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Enlace público generado - Gestor Docs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f6f7;
+      padding: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 30px;
+      max-width: 600px;
+      margin: 0 auto;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .logo span {
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: #198754;
+      color: white !important;
+      padding: 10px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      margin-top: 15px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #999;
+      text-align: center;
+    }
+
+    code {
+      background: #f8f9fa;
+      padding: 6px 10px;
+      display: inline-block;
+      margin-top: 10px;
+      color: #c7254e;
+      font-size: 0.9rem;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">📁 <span>Gestor Docs</span></div>
+
+    <h2>🔗 Enlace generado con éxito</h2>
+
+    <p>Hola {{ usuario.first_name|default:usuario.username }},</p>
+
+    <p>Se ha creado un enlace público para tu documento <strong>“{{ documento.nombre }}”</strong>.</p>
+
+    <a href="{{ enlace_url }}" class="btn" target="_blank">📂 Ver documento</a>
+
+    <p style="margin-top: 20px;">
+      Enlace directo:
+      <br>
+      <code>{{ enlace_url }}</code>
+    </p>
+
+    <p style="margin-top: 10px;">
+      📅 Este enlace expira el <strong>{{ documento.fecha_expiracion|date:"d/m/Y H:i" }}</strong>
+    </p>
+
+    <div class="footer">
+      Este mensaje fue enviado automáticamente por el sistema <strong>Gestor Documental</strong> de BenjaTech 🚀
+    </div>
+  </div>
+</body>
+</html>

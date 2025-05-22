@@ -31,6 +31,18 @@ DEBUG = True
 ALLOWED_HOSTS = ['gestor-documental-c1tp.onrender.com', '127.0.0.1', 'localhost']
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'antoniobarraza1133@gmail.com'  # tu correo de Gmail
+EMAIL_HOST_PASSWORD = 'xhgeqietvqqwgedd'  # clave de 16 dígitos
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
 
 # Application definition
 

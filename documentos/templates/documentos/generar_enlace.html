@@ -51,12 +51,57 @@
   {% if enlace_generado %}
     <div id="enlace-box" class="alert alert-success text-center mt-4">
       <strong>✅ Enlace generado correctamente:</strong>
-      <div class="mt-3">
-        <a href="{{ enlace_generado }}" target="_blank" class="btn btn-outline-success">
-          🔗 {{ enlace_generado }}
-        </a>
+
+      <div class="mt-3 d-flex justify-content-center flex-wrap gap-2 align-items-center">
+        <code id="enlace-generado-text" class="text-break">{{ enlace_generado }}</code>
+        <button onclick="copiarEnlaceGenerado()" class="btn btn-outline-primary btn-sm">📋 Copiar enlace</button>
+      </div>
+
+      <div class="mt-3 text-muted small">
+        ✉️ También se ha enviado un correo con este enlace a <strong>{{ request.user.email }}</strong>.
       </div>
     </div>
   {% endif %}
 </div>
+
+<!-- Toast visual -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="toastEnlace" class="toast text-bg-success border-0" role="alert" data-bs-delay="4000">
+    <div class="toast-body">
+      ✅ Enlace generado y correo enviado correctamente.
+    </div>
+  </div>
+</div>
+
+<script>
+  function copiarEnlaceGenerado() {
+    const texto = document.getElementById('enlace-generado-text').textContent;
+    const boton = document.querySelector('button[onclick="copiarEnlaceGenerado()"]');
+
+    navigator.clipboard.writeText(texto).then(() => {
+      const toast = new bootstrap.Toast(document.getElementById('toastEnlace'));
+      toast.show();
+
+      const original = boton.innerHTML;
+      boton.innerHTML = "✅ Copiado";
+      boton.classList.remove("btn-outline-primary");
+      boton.classList.add("btn-success");
+
+      setTimeout(() => {
+        boton.innerHTML = original;
+        boton.classList.remove("btn-success");
+        boton.classList.add("btn-outline-primary");
+      }, 3000);
+    }).catch(() => {
+      alert("No se pudo copiar el enlace.");
+    });
+  }
+
+  {% if enlace_generado %}
+  document.addEventListener("DOMContentLoaded", function () {
+    const toast = new bootstrap.Toast(document.getElementById('toastEnlace'));
+    toast.show();
+  });
+  {% endif %}
+</script>
 {% endblock %}

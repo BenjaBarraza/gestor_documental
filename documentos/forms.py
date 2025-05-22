@@ -97,9 +97,15 @@ class EnlacePublicoForm(forms.ModelForm):
         fields = ['fecha_expiracion']
         widgets = {
             'fecha_expiracion': forms.DateTimeInput(
-                attrs={'type': 'datetime-local', 'class': 'form-control'}
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M'
             )
         }
         labels = {
             'fecha_expiracion': 'Fecha y hora de expiración del enlace'
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['fecha_expiracion'].input_formats = ['%Y-%m-%dT%H:%M']
+

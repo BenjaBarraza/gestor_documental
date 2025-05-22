@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>¡Bienvenido a Gestor Docs!</title>
+  <style>
+    body {
+      background: #f5f8fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .card {
+      background: #ffffff;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      color: #198754;
+    }
+
+    .emoji {
+      font-size: 2.5rem;
+      animation: bounce 1.5s infinite;
+    }
+
+    .btn {
+      background-color: #0d6efd;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 20px;
+    }
+
+    .footer {
+      font-size: 0.85rem;
+      color: #999;
+      margin-top: 40px;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="emoji">📁✨</div>
+    <h1>¡Bienvenido/a, {{ usuario.first_name|default:usuario.username }}!</h1>
+    <p>Tu cuenta en <strong>Gestor Docs</strong> está lista para comenzar a organizar y compartir tus documentos de forma segura y eficiente.</p>
+
+    <a class="btn" href="https://{{ request.get_host }}/">🌐 Acceder al sistema</a>
+
+    <div class="footer">
+      Este mensaje fue enviado automáticamente por el sistema de gestión documental de BenjaTech 🚀
+    </div>
+  </div>
+</body>
+</html>

@@ -1,7 +1,7 @@
-from datetime import timedelta
 import mimetypes
 import os
 import uuid
+from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -16,6 +16,13 @@ from .forms import EnlacePublicoForm
 from django.utils import timezone
 from django.utils.timezone import now
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.contrib import messages
+
+
 
 
 
@@ -47,16 +54,40 @@ def registrar_usuario(request):
             tipo = form.cleaned_data['tipo_cuenta']
             user.perfilusuario.tipo_cuenta = tipo
             user.perfilusuario.save()
+
+            # ✅ Enviar correo de bienvenida
+            try:
+                html_bienvenida = render_to_string("emails/bienvenida.html", {
+                    'usuario': user,
+                    'request': request,
+                })
+
+                email = EmailMultiAlternatives(
+                    subject='🎉 ¡Bienvenido a Gestor Docs!',
+                    body='Tu cliente de correo no admite HTML.',
+                    from_email=None,
+                    to=[user.email],
+                )
+                email.attach_alternative(html_bienvenida, "text/html")
+                email.send()
+                print(f"✅ Correo de bienvenida enviado a {user.email}")
+            except Exception as e:
+                print("❌ Error al enviar correo de bienvenida:", e)
+
+            # ✅ Mensaje de éxito
+            messages.success(request, '🎉 ¡Registro exitoso! Te hemos enviado un correo de bienvenida.')
+
             return redirect('login')
         else:
             print("❌ Formulario inválido:", form.errors)
     else:
         form = RegistroUsuarioForm()
-    
+
     return render(request, 'documentos/registro.html', {'form': form})
 
 
-from django.contrib import messages  # Asegúrate de tener esta línea en tus imports
+
+
 
 @login_required
 def subir_documento(request):
@@ -167,7 +198,6 @@ def eliminar_documento(request, documento_id):
     
 
 
-
 @login_required
 def generar_enlace(request, doc_id):
     documento = get_object_or_404(Documento, id=doc_id)
@@ -182,13 +212,37 @@ def generar_enlace(request, doc_id):
     if request.method == 'POST':
         form = EnlacePublicoForm(request.POST)
         if form.is_valid():
+            # Guardar expiración y enlace único
             documento.fecha_expiracion = form.cleaned_data['fecha_expiracion']
             documento.enlace_publico = str(uuid.uuid4())
             documento.save()
 
-            request.session['enlace_generado'] = request.build_absolute_uri(
-                f"/publico/{documento.enlace_publico}"
-            )
+            # Construir enlace absoluto
+            enlace_url = request.build_absolute_uri(f"/publico/{documento.enlace_publico}")
+
+            # Guardar en sesión para mostrar tras redirect
+            request.session['enlace_generado'] = enlace_url
+
+            # ✉️ Enviar correo al usuario
+            try:
+                html_content = render_to_string("emails/enlace_generado.html", {
+                    'usuario': request.user,
+                    'documento': documento,
+                    'enlace_url': enlace_url,
+                })
+
+                email = EmailMultiAlternatives(
+                    subject='🔗 Enlace público generado',
+                    body='Tu cliente de correo no admite HTML.',
+                    from_email=None,  # usa DEFAULT_FROM_EMAIL
+                    to=[request.user.email],
+                )
+                email.attach_alternative(html_content, "text/html")
+                email.send()
+                print(f"✅ Correo enviado a: {request.user.email}")
+            except Exception as e:
+                print("❌ ERROR al enviar correo:", e)
+
             return redirect('documentos:generar_enlace', doc_id=doc_id)
     else:
         form = EnlacePublicoForm(initial={'fecha_expiracion': documento.fecha_expiracion})
@@ -200,6 +254,7 @@ def generar_enlace(request, doc_id):
         'form': form,
         'enlace_generado': enlace_generado,
     })
+
 
 
 
@@ -243,5 +298,30 @@ def eliminar_enlace_publico(request, doc_id):
 
     
 
+@login_required
+def prueba_email(request):
+    send_mail(
+        subject='📧 Prueba de correo desde Gestor Documental',
+        message='¡Hola! Este es un correo de prueba enviado desde tu aplicación Django con Gmail.',
+        from_email=None,
+        recipient_list=[request.user.email],
+        fail_silently=False,
+    )
+    return HttpResponse("Correo de prueba enviado a: " + request.user.email)
+
+
+
+
+#@login_required
+#def ver_correo_generado(request):
+ #   from django.template.loader import render_to_string
+
+  #  html = render_to_string("emails/enlace_generado.html", {
+   #     'usuario': request.user,
+    #    'documento': Documento.objects.filter(usuario=request.user).last(),
+     #   'enlace_url': 'http://localhost:8000/publico/fake-enlace-prueba'
+    #})
+
+    #return HttpResponse(html)
 
     
