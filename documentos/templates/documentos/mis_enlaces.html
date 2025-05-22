@@ -19,7 +19,7 @@
         </thead>
         <tbody>
           {% for doc in documentos %}
-            <tr>
+            <tr id="row-{{ doc.id }}">
               <td>{{ doc.nombre }}</td>
               <td>
                 <code id="enlace-{{ doc.id }}" style="font-size: 0.85rem;">
@@ -35,7 +35,6 @@
                 {% endif %}
               </td>
               <td class="d-flex flex-wrap justify-content-center gap-2">
-
                 {% if doc.fecha_expiracion and doc.fecha_expiracion < ahora %}
                   <button class="btn btn-sm btn-outline-secondary" disabled>📋 Copiar</button>
                 {% else %}
@@ -43,33 +42,12 @@
                 {% endif %}
 
                 <!-- Botón que activa el modal -->
-                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ doc.id }}">
+                <button type="button" class="btn btn-sm btn-outline-danger" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#modalEliminar" 
+                        onclick="prepareEliminar({{ doc.id }}, '{{ doc.nombre|escapejs }}')">
                   🗑️ Eliminar
                 </button>
-
-                <!-- Modal Bootstrap para confirmar eliminación -->
-                <div class="modal fade" id="modalEliminar{{ doc.id }}" tabindex="-1" aria-labelledby="modalLabel{{ doc.id }}" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel{{ doc.id }}">¿Eliminar enlace?</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                      </div>
-                      <div class="modal-body">
-                        ¿Estás seguro de eliminar el enlace público llamado <strong>{{ doc.nombre }}</strong>?
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <form method="post" action="{% url 'documentos:eliminar_enlace_publico' doc.id %}">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- Fin Modal -->
-
               </td>
             </tr>
           {% endfor %}
@@ -88,6 +66,50 @@
   </div>
 </div>
 
+<!-- Modal de confirmación Bootstrap -->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalLabel">¿Eliminar enlace?</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        Estás a punto de eliminar el enlace de: <br>
+        <strong id="nombreEnlaceAEliminar"></strong>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirmarEliminarBtn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de éxito -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="enlaceToast" class="toast align-items-center text-bg-success border-0" role="alert" data-bs-delay="3500">
+    <div class="d-flex">
+      <div class="toast-body">
+        ✅ Enlace eliminado correctamente
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Animación slide-up -->
+<style>
+  .slide-up {
+    transition: all 0.5s ease;
+    opacity: 0;
+    height: 0 !important;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+</style>
+
 <script>
   function copiarEnlace(id) {
     const texto = document.getElementById('enlace-' + id).textContent;
@@ -97,5 +119,43 @@
       alert("Error al copiar el enlace.");
     });
   }
+
+  let docAEliminarId = null;
+
+  function prepareEliminar(id, nombre) {
+    docAEliminarId = id;
+    document.getElementById('nombreEnlaceAEliminar').textContent = nombre;
+  }
+
+  document.getElementById('confirmarEliminarBtn').addEventListener('click', function () {
+    if (docAEliminarId) {
+      fetch(`/eliminar_enlace/${docAEliminarId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success || data.status === 'success') {
+          const row = document.getElementById(`row-${docAEliminarId}`);
+          row.classList.add('slide-up');
+          setTimeout(() => row.remove(), 500);
+
+          const toastEl = document.getElementById('enlaceToast');
+          const toast = new bootstrap.Toast(toastEl);
+          toast.show();
+        } else {
+          alert('Error al eliminar el enlace: ' + (data.error || 'Error desconocido'));
+        }
+      })
+      .catch((error) => alert('Error de red al eliminar: ' + error.message))
+      .finally(() => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminar'));
+        modal.hide();
+      });
+    }
+  });
 </script>
 {% endblock %}

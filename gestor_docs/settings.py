@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-import os 
+import os
+from django.contrib.messages import constants as messages
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +34,17 @@ ALLOWED_HOSTS = ['gestor-documental-c1tp.onrender.com', '127.0.0.1', 'localhost'
 
 # Application definition
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# --- Configuración de mensajes ---
+# (opcional, si quieres personalizar clases CSS de Bootstrap)
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

@@ -1,7 +1,6 @@
 {% extends 'documentos/base.html' %}
 {% load etiquetas_tags %}
 
-
 {% block title %}Tus Documentos | Gestor Documental{% endblock %}
 
 {% block content %}
@@ -13,9 +12,8 @@
 {% if documentos %}
   <ul class="list-group shadow-sm">
     {% for doc in documentos %}
-      <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <li id="doc-{{ doc.id }}" class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div class="flex-grow-1">
-          <!-- Icono por tipo -->
           {% with ext=doc.archivo.name|slice:"-4:"|lower %}
             {% if ext == ".pdf" %}
               📄
@@ -34,9 +32,8 @@
           </a>
           <br>
           <small class="text-muted">👤 Subido por: {{ doc.usuario.username }}</small><br>
-          <small class="text-muted">📅 {{ doc.fecha_subida|date:"d/m/Y" }} a las {{ doc.fecha_subida|date:"H:i" }}</small>
+          <small class="text-muted">🗓️ {{ doc.fecha_subida|date:"d/m/Y" }} a las {{ doc.fecha_subida|date:"H:i" }}</small>
           
-          <!-- Etiquetas -->
           {% if doc.etiquetas_lista %}
             <div class="mt-1">
               {% for etiqueta in doc.etiquetas_lista %}
@@ -47,7 +44,6 @@
         </div>
 
         <div class="d-flex align-items-center gap-2">
-          <!-- Tipo de archivo visual -->
           {% with ext=doc.archivo.name|slice:"-4:"|upper %}
             {% if ext == ".PDF" %}
               <span class="badge bg-danger">{{ ext }}</span>
@@ -60,8 +56,14 @@
             {% endif %}
           {% endwith %}
 
-          <!-- Botón eliminar -->
-          <button class="delete-btn" onclick='confirmDelete({{ doc.id }}, "{{ doc.nombre|escapejs }}")' title="Eliminar documento">🗑️</button>
+          <!-- Botón eliminar con modal -->
+          <button class="btn btn-sm btn-danger" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#confirmDeleteModal"
+                  onclick="prepareDelete({{ doc.id }}, '{{ doc.nombre|escapejs }}')"
+                  title="Eliminar documento">
+            🗑️
+          </button>
         </div>
       </li>
     {% endfor %}
@@ -79,56 +81,88 @@
   <button type="submit" class="btn btn-primary">🔍 Buscar</button>
 </form>
 
-<!-- Modal de confirmación -->
-<div id="deleteModal" class="modal">
-  <div class="modal-content">
-    <h3>¿Eliminar documento?</h3>
-    <p>Estás a punto de eliminar el documento: <strong id="docNameToDelete"></strong></p>
-    <p>Esta acción no se puede deshacer.</p>
-    <div class="modal-actions">
-      <button onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
-      <button id="confirmDeleteBtn" class="btn btn-danger">Eliminar definitivamente</button>
+<!-- Modal Bootstrap para confirmar eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="confirmDeleteModalLabel">¿Eliminar documento?</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>Estás a punto de eliminar:</p>
+        <h6 class="text-danger fw-bold" id="docNameToDelete">Nombre del documento</h6>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- Toast de éxito -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="deleteToast" class="toast align-items-center text-bg-success border-0" role="alert" data-bs-delay="3500">
+    <div class="d-flex">
+      <div class="toast-body">
+        ✅ Documento eliminado correctamente
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Animación -->
+<style>
+  .slide-up {
+    transition: all 0.5s ease;
+    opacity: 0;
+    height: 0 !important;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+</style>
+
 <script>
   let currentDocId = null;
 
-  function confirmDelete(docId, docName) {
+  function prepareDelete(docId, docName) {
     currentDocId = docId;
     document.getElementById('docNameToDelete').textContent = docName;
-    document.getElementById('deleteModal').style.display = 'flex';
-  }
-
-  function closeModal() {
-    document.getElementById('deleteModal').style.display = 'none';
-    currentDocId = null;
   }
 
   document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-    if (currentDocId) deleteDocument(currentDocId);
-  });
+    if (currentDocId) {
+      fetch(`/eliminar/${currentDocId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success || data.status === 'success') {
+          const item = document.getElementById(`doc-${currentDocId}`);
+          item.classList.add('slide-up');
+          setTimeout(() => item.remove(), 500);
 
-  function deleteDocument(docId) {
-    fetch(`/eliminar/${docId}/`, {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': '{{ csrf_token }}',
-        'Content-Type': 'application/json',
-      },
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success || data.status === 'success') window.location.reload();
-      else alert('Error al eliminar: ' + (data.error || 'Error desconocido'));
-    })
-    .catch((error) => alert('Error de red al eliminar: ' + error.message))
-    .finally(() => closeModal());
-  }
-
-  document.getElementById('deleteModal').addEventListener('click', function (e) {
-    if (e.target === this) closeModal();
+          const toastEl = document.getElementById('deleteToast');
+          const toast = new bootstrap.Toast(toastEl);
+          toast.show();
+        } else {
+          alert('Error al eliminar: ' + (data.error || 'Error desconocido'));
+        }
+      })
+      .catch((error) => alert('Error de red al eliminar: ' + error.message))
+      .finally(() => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+        modal.hide();
+      });
+    }
   });
 </script>
 {% endblock %}

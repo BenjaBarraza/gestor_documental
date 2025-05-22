@@ -201,14 +201,23 @@ def mis_enlaces(request):
         'ahora': now()
     })
 
+from django.http import JsonResponse
+
+@require_POST
 @login_required
 def eliminar_enlace_publico(request, doc_id):
     documento = get_object_or_404(Documento, id=doc_id, usuario=request.user)
     documento.enlace_publico = None
     documento.fecha_expiracion = None
     documento.save()
-    messages.success(request, f"El enlace del documento «{documento.nombre}» fue eliminado correctamente.")
-    return redirect('documentos:mis_enlaces')
+
+    # Respuesta AJAX
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
+
+    # Respuesta clásica
+    return JsonResponse({'success': True})
+
     
 
 

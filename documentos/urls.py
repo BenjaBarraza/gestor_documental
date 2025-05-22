@@ -18,5 +18,6 @@ urlpatterns = [
     path('compartido/<str:enlace>/', views.documento_publico, name='documento_publico'),
     path('publico/<uuid:enlace>/', views.documento_publico, name='documento_publico'),
     path('mis-enlaces/', views.mis_enlaces, name='mis_enlaces'),
-    path('eliminar-enlace/<int:doc_id>/', views.eliminar_enlace_publico, name='eliminar_enlace_publico'),
+    path('eliminar_enlace/<int:doc_id>/', views.eliminar_enlace_publico, name='documentos:eliminar_enlace_publico'),
+
 ]
