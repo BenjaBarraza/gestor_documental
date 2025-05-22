@@ -1,0 +1,15 @@
+{% extends 'documentos/base.html' %}
+
+{% block title %}Acceso denegado{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5 py-5">
+  <div class="display-1 text-danger mb-3">🚫</div>
+  <h2 class="text-danger mb-3">403 - Acceso denegado</h2>
+  <p class="lead">No tienes permiso para acceder a este documento.</p>
+  <div class="mt-4">
+    <a href="{% url 'documentos:lista' %}" class="btn btn-secondary me-2">← Volver a documentos</a>
+    <a href="{% url 'documentos:home' %}" class="btn btn-primary">🏠 Ir al inicio</a>
+  </div>
+</div>
+{% endblock %}

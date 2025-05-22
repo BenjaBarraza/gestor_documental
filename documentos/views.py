@@ -9,7 +9,7 @@ from documentos.models import Documento
 from .forms import DocumentoForm 
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from .forms import RegistroUsuarioForm
 from django.db.models import Q
 from .forms import EnlacePublicoForm
@@ -123,11 +123,15 @@ def buscar_documentos(request):
     })
 
 
+
 @login_required
 def previsualizar_documento(request, documento_id):
-    documento = get_object_or_404(Documento, id=documento_id, usuario=request.user)
-    mimetype, _ = mimetypes.guess_type(documento.archivo.url)
+    documento = get_object_or_404(Documento, id=documento_id)
 
+    if not request.user.is_superuser and documento.usuario != request.user:
+        return render(request, 'documentos/403.html', status=403)
+
+    mimetype, _ = mimetypes.guess_type(documento.archivo.url)
     es_pdf = mimetype == 'application/pdf'
     es_imagen = mimetype and mimetype.startswith('image/')
     es_video = mimetype and mimetype.startswith('video/')
@@ -139,23 +143,41 @@ def previsualizar_documento(request, documento_id):
         'es_video': es_video,
     })
 
+
+
 @require_POST
 @login_required
 def eliminar_documento(request, documento_id):
+    documento = get_object_or_404(Documento, id=documento_id)
+
+    # Verificación de permisos
+    if not request.user.is_superuser and documento.usuario != request.user:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': 'Acceso denegado'}, status=403)
+        else:
+            return render(request, 'documentos/prohibido.html', status=403)
+
     try:
-        documento = Documento.objects.get(id=documento_id, usuario=request.user)
-        documento.archivo.delete()  # Elimina el archivo físico
-        documento.delete()         # Elimina el registro de la BD
+        documento.archivo.delete()
+        documento.delete()
         return JsonResponse({'status': 'success'})
-    except Documento.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Documento no encontrado'}, status=404)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
     
+
+
 
 @login_required
 def generar_enlace(request, doc_id):
-    documento = get_object_or_404(Documento, id=doc_id, usuario=request.user)
+    documento = get_object_or_404(Documento, id=doc_id)
+
+    # Verificación de permisos
+    if not request.user.is_superuser and documento.usuario != request.user:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': 'Acceso denegado'}, status=403)
+        else:
+            return render(request, 'documentos/prohibido.html', status=403)
 
     if request.method == 'POST':
         form = EnlacePublicoForm(request.POST)
@@ -164,33 +186,34 @@ def generar_enlace(request, doc_id):
             documento.enlace_publico = str(uuid.uuid4())
             documento.save()
 
-            # Guarda el enlace en sesión
             request.session['enlace_generado'] = request.build_absolute_uri(
-                reverse('documentos:documento_publico', args=[str(documento.enlace_publico)])
+                f"/publico/{documento.enlace_publico}"
             )
-
-            return redirect('documentos:generar_enlace', doc_id=documento.id)
+            return redirect('documentos:generar_enlace', doc_id=doc_id)
     else:
         form = EnlacePublicoForm(initial={'fecha_expiracion': documento.fecha_expiracion})
 
-    # Recupera el enlace generado desde sesión si existe
     enlace_generado = request.session.pop('enlace_generado', None)
 
     return render(request, 'documentos/generar_enlace.html', {
         'documento': documento,
         'form': form,
-        'enlace_generado': enlace_generado
+        'enlace_generado': enlace_generado,
     })
+
 
 
 def documento_publico(request, enlace):
     documento = get_object_or_404(Documento, enlace_publico=enlace)
 
-    # Validar expiración
+    # Validar expiración del enlace
     if documento.fecha_expiracion and timezone.now() > documento.fecha_expiracion:
-        return render(request, 'documentos/enlace_expirado.html')
+        return render(request, 'documentos/enlace_expirado.html', status=403)
+
+    # (Futuro) Validar si requiere contraseña y no se ha ingresado
 
     return render(request, 'documentos/compartido.html', {'documento': documento})
+
 
 
 @login_required
