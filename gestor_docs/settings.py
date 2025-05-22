@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 
                  'localhost', 
-                 'https://gestor-documental-c1tp.onrender.com', 
+                 'gestor-documental-c1tp.onrender.com/', 
                  'render.com']
 
 
