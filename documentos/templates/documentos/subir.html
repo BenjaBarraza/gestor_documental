@@ -21,7 +21,6 @@
     text-align: center;
     cursor: pointer;
     transition: all 0.3s;
-    position: relative;
   }
 
   .file-input-button:hover {
@@ -96,9 +95,9 @@
       <div class="mb-3">
         <label for="id_archivo" class="form-label">📎 Seleccionar archivo</label>
         <div class="file-input-container">
-          <div class="file-input-button" id="customFileInput">
+          <div class="file-input-button">
             <i>📁</i>
-            <span id="archivo-label">Haz clic para seleccionar un archivo</span>
+            <span>Haz clic para seleccionar un archivo</span>
             {{ form.archivo }}
           </div>
         </div>
@@ -109,7 +108,7 @@
           Soporta: 
           <span class="badge bg-primary">PDF</span> 
           <span class="badge bg-success">JPG</span> 
-          <span class="badge bg-info text-dark">DOCX</span>, etc. Máx. 100 MB
+          <span class="badge bg-info text-dark">DOCX</span>, etc. Máx. 5 MB
         </div>
       </div>
 
@@ -129,20 +128,4 @@
     </form>
   </div>
 </div>
-
-<!-- Script para mostrar nombre del archivo -->
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const inputArchivo = document.getElementById("id_archivo");
-    const label = document.getElementById("archivo-label");
-
-    inputArchivo.addEventListener("change", function () {
-      if (inputArchivo.files.length > 0) {
-        label.textContent = inputArchivo.files[0].name;
-      } else {
-        label.textContent = "Haz clic para seleccionar un archivo";
-      }
-    });
-  });
-</script>
 {% endblock %}
