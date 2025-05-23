@@ -135,7 +135,7 @@
         <div class="mb-3">
           <div class="d-flex justify-content-between align-items-center">
             <label for="id_password" class="form-label mb-0">Contraseña</label>
-            <a href="#" class="small text-muted">¿Olvidaste tu contraseña?</a>
+            <a href="{% url 'documentos:password_reset' %}" class="small text-muted">¿Olvidaste tu contraseña?</a>
           </div>
           {{ form.password|add_class:"form-control" }}
         </div>

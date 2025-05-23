@@ -308,20 +308,3 @@ def prueba_email(request):
         fail_silently=False,
     )
     return HttpResponse("Correo de prueba enviado a: " + request.user.email)
-
-
-
-
-#@login_required
-#def ver_correo_generado(request):
- #   from django.template.loader import render_to_string
-
-  #  html = render_to_string("emails/enlace_generado.html", {
-   #     'usuario': request.user,
-    #    'documento': Documento.objects.filter(usuario=request.user).last(),
-     #   'enlace_url': 'http://localhost:8000/publico/fake-enlace-prueba'
-    #})
-
-    #return HttpResponse(html)
-
-    
