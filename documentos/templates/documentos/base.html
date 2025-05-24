@@ -16,7 +16,7 @@
 
     <style>
     body {
-        padding-top: 70px;
+      padding-top: 70px;
     }
 
     .navbar-brand span {
@@ -92,8 +92,8 @@
         </div>
       {% else %}
         <div class="d-lg-flex align-items-center gap-2 nav-mobile-group mt-2 mt-lg-0">
-          <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Iniciar sesión</a>
-          <a href="{% url 'documentos:registrar' %}" class="btn btn-success btn-sm">Registrarse</a>
+          <a href="{% url 'login' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">Iniciar sesión</a>
+          <a href="{% url 'documentos:registrar' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">Registrarse</a>
         </div>
       {% endif %}
     </div>

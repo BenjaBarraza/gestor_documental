@@ -107,7 +107,7 @@
     {% endif %}
   </div>
 
-  <a href="{% url 'documentos:home' %}" class="btn btn-secondary">🏠 Inicio</a>
+  <a href="{% url 'documentos:home' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">🏠 Inicio</a>
 </div>
 
 <!-- Vista previa -->
@@ -138,14 +138,14 @@
 {% endif %}
 
 <div class="actions">
-  <a href="{% url 'documentos:lista' %}" class="btn btn-secondary">← Volver a la lista</a>
-  <a href="{{ documento.archivo.url }}" download class="btn btn-success">⬇️ Descargar</a>
+  <a href="{% url 'documentos:lista' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">← Volver a la lista</a>
+  <a href="{{ documento.archivo.url }}" download class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">⬇️ Descargar</a>
 
   {% if documento.enlace_publico %}
     <!-- <button class="btn btn-primary" onclick="copiarEnlace()">🔗 Copiar enlace público</button> -->
   {% endif %}
 
-  <a href="{% url 'documentos:generar_enlace' doc_id=documento.id %}" class="btn btn-secondary">
+  <a href="{% url 'documentos:generar_enlace' doc_id=documento.id %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">
     🕒 Generar enlace público
   </a>
 </div>
