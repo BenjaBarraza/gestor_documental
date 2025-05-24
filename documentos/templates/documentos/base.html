@@ -74,15 +74,20 @@
     <div class="collapse navbar-collapse justify-content-end" id="navbarContenido">
       {% if user.is_authenticated %}
         <div class="d-lg-flex align-items-center gap-2 nav-mobile-group mt-2 mt-lg-0">
-          <span class="fw-semibold text-dark">👤 {{ user.username }}</span>
+          
+          <a href="{% url 'documentos:perfil' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">
+            👤 {{ user.username }}
+        </a>
 
-          <a href="{% url 'documentos:mis_enlaces' %}" class="btn btn-secondary btn-sm fw-semibold">
+
+
+          <a href="{% url 'documentos:mis_enlaces' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">
             🔗 Enlaces Públicos
           </a>
 
           <form method="post" action="{% url 'logout' %}" class="d-inline">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger btn-sm fw-semibold">Cerrar sesión</button>
+            <button type="submit" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">Cerrar sesión</button>
           </form>
         </div>
       {% else %}

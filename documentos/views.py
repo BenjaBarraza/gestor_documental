@@ -21,6 +21,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.contrib import messages
+from .forms import PerfilUsuarioForm
 
 
 
@@ -296,6 +297,30 @@ def eliminar_enlace_publico(request, doc_id):
     # Respuesta clásica
     return JsonResponse({'success': True})
 
+
+@login_required
+def perfil_usuario(request):
+    perfil = request.user.perfilusuario  # Usa el modelo extendido
+    return render(request, 'documentos/perfil.html', {
+        'usuario': request.user,
+        'perfil': perfil
+    })
+
+
+
+@login_required
+def editar_perfil(request):
+    perfil = request.user.perfilusuario
+    if request.method == 'POST':
+        form = PerfilUsuarioForm(request.POST, instance=perfil, user=request.user)
+        if form.is_valid():
+            request.user.email = form.cleaned_data['email']
+            request.user.save()
+            form.save()
+            return redirect('documentos:perfil')
+    else:
+        form = PerfilUsuarioForm(instance=perfil, user=request.user)
+    return render(request, 'documentos/editar_perfil.html', {'form': form})
     
 
 @login_required

@@ -1,0 +1,128 @@
+{% extends "documentos/base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .perfil-container {
+        max-width: 900px;
+        margin: 4rem auto;
+        padding: 2rem;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .perfil-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .perfil-icon {
+        font-size: 3rem;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        padding: 1rem;
+        border-radius: 50%;
+    }
+
+    .perfil-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .perfil-info {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        background: #f3f4f6;
+        border-left: 5px solid #4f46e5;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+        cursor: default;
+    }
+
+    .info-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
+        border-left-color: #6366f1;
+        background: #eef2ff;
+    }
+
+    .info-label {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        color: #4b5563;
+        margin-bottom: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: #111827;
+        font-weight: 500;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="perfil-container">
+    <div class="perfil-header">
+        <div class="perfil-icon">👤</div>
+        <h2 class="perfil-title">Mi Perfil</h2>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3 gap-2">
+        <a href="{% url 'documentos:home' %}" class="btn btn-light shadow-sm">
+            🏠 Inicio
+        </a>
+        <a href="{% url 'documentos:editar_perfil' %}" class="btn btn-light shadow-sm">
+            ✏️ Editar información
+        </a>
+    </div>
+
+    <div class="perfil-info">
+        <div class="info-item">
+            <div class="info-label">👤 Nombre de usuario:</div>
+            <div class="info-value">{{ usuario.username }}</div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-label">📧 Email:</div>
+            <div class="info-value">{{ usuario.email }}</div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-label">🆔 Tipo de cuenta:</div>
+            <div class="info-value">{{ perfil.tipo_cuenta|title }}</div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-label">📅 Fecha de registro:</div>
+            <div class="info-value">{{ usuario.date_joined|date:"d M Y H:i" }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

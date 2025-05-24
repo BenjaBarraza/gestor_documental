@@ -2,6 +2,7 @@ from django import forms
 from .models import Documento
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import PerfilUsuario
 
 # === NUEVO ===
 from pillow_heif import register_heif_opener
@@ -109,3 +110,20 @@ class EnlacePublicoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['fecha_expiracion'].input_formats = ['%Y-%m-%dT%H:%M']
 
+
+
+# ------------------------------
+# Formulario de edicion del perfil de usuario
+# ------------------------------
+class PerfilUsuarioForm(forms.ModelForm):
+    email = forms.EmailField(label='Correo electrónico')
+
+    class Meta:
+        model = PerfilUsuario
+        fields = ['tipo_cuenta']
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['email'].initial = user.email
