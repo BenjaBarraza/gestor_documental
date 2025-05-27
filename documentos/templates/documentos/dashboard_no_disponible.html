@@ -1,0 +1,152 @@
+{% extends 'documentos/base.html' %}
+{% load static %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<style>
+/* 🧠 Adaptamos solo las clases necesarias para evitar conflictos con Bootstrap */
+.empty-state-icon {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 40px;
+    position: relative;
+    animation: float 3s ease-in-out infinite;
+}
+
+.empty-state-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, #667eea20, #764ba220);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.empty-state-icon i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.main-title {
+    font-size: 36px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.account-buttons .btn {
+    border-radius: 30px;
+    padding: 12px 25px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+}
+
+.btn-primary-custom:hover {
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-secondary-custom {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-secondary-custom:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* Animaciones */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+}
+</style>
+
+<div class="container py-5 text-center">
+    <!-- Ícono -->
+    <div class="empty-state-icon mb-4">
+        <i class="fas fa-rocket"></i>
+    </div>
+
+    <!-- Título -->
+    <h1 class="main-title mb-3">¡Configura tu Dashboard Personalizado!</h1>
+    <p class="text-muted mb-4 fs-5">
+        Tu cuenta aún no tiene un panel asignado. Puedes configurar un dashboard con estadísticas y herramientas útiles.
+    </p>
+
+    <!-- Botones -->
+    <div class="account-buttons d-flex justify-content-center flex-wrap gap-3 mb-5">
+        <button class="btn btn-primary-custom" onclick="setupDashboard()">
+            <i class="fas fa-magic me-2"></i> Configurar Dashboard
+        </button>
+        <a href="#" class="btn btn-secondary-custom">
+            <i class="fas fa-question-circle me-2"></i> Más Información
+        </a>
+    </div>
+
+    <!-- Beneficios -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Estadísticas Avanzadas</h5>
+                    <p class="card-text">Conoce tus documentos más accedidos, espacio usado y tendencias.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Colaboración</h5>
+                    <p class="card-text">Comparte archivos, invita usuarios y organiza carpetas en equipo.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-shield-alt fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Seguridad</h5>
+                    <p class="card-text">Permisos personalizados, enlaces protegidos y respaldo de datos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setupDashboard() {
+    alert("Aquí podrías abrir un modal o redirigir a una ruta de configuración.");
+    // window.location.href = "/configurar-dashboard/";
+}
+</script>
+{% endblock %}

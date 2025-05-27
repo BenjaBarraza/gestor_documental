@@ -1,47 +1,97 @@
-{% extends "base.html" %}
+{% extends 'documentos/base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="flex">
-  <!-- Sidebar lateral -->
-  <aside class="w-64 bg-gray-900 text-white min-h-screen p-4">
-    <h2 class="text-2xl font-bold mb-6">Gestión Empresarial</h2>
-    <ul class="space-y-4">
-      <li><a href="{% url 'invitar_usuario' %}" class="block hover:text-yellow-300">➕ Invitar usuarios</a></li>
-      <li><a href="{% url 'gestion_permisos' %}" class="block hover:text-yellow-300">🛡️ Gestionar permisos</a></li>
-      <li><a href="{% url 'carpetas_compartidas' %}" class="block hover:text-yellow-300">🗂️ Carpetas compartidas</a></li>
-      <li><a href="{% url 'documentos_equipo' %}" class="block hover:text-yellow-300">📋 Ver documentos del equipo</a></li>
-    </ul>
-  </aside>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-  <!-- Contenido principal -->
-  <main class="flex-1 p-6 bg-gray-100">
-    <h1 class="text-3xl font-bold mb-6">📊 Panel del Equipo</h1>
+<style>
+  {% comment %} Puedes copiar el CSS desde el archivo original o incluirlo como archivo estático {% endcomment %}
+  /* Incluye aquí solo lo esencial para evitar conflictos con Bootstrap */
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 30px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+  }
+  .stat-title { font-size: 16px; opacity: 0.9; font-weight: 500; }
+  .stat-value { font-size: 36px; font-weight: bold; }
+  .stat-icon { font-size: 24px; opacity: 0.8; }
+  .activity-item {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .activity-icon {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 20px;
+  }
+</style>
 
-    <!-- KPIs -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div class="bg-white p-4 rounded shadow">
-        <p class="text-gray-500">Documentos del equipo</p>
-        <p class="text-2xl font-bold">{{ stats.total_documentos }}</p>
-      </div>
-      <div class="bg-white p-4 rounded shadow">
-        <p class="text-gray-500">Almacenamiento usado</p>
-        <p class="text-2xl font-bold">{{ stats.espacio_usado }} MB</p>
-      </div>
-      <div class="bg-white p-4 rounded shadow">
-        <p class="text-gray-500">Miembros activos esta semana</p>
-        <p class="text-2xl font-bold">{{ stats.miembros_activos }}</p>
+<div class="container py-5">
+  <h1 class="mb-4 fw-bold text-center"><i class="fas fa-building text-primary me-2"></i>Panel Empresarial</h1>
+
+  <!-- Stats Cards -->
+  <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    <div class="col">
+      <div class="stat-card text-center">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="stat-title">Total documentos</span>
+          <i class="fas fa-file-alt stat-icon"></i>
+        </div>
+        <div class="stat-value">{{ stats.total_documentos }}</div>
+        <small><i class="fas fa-clock me-1"></i> Últimos 7 días</small>
       </div>
     </div>
 
-    <!-- Actividad reciente -->
-    <h2 class="text-xl font-semibold mb-4">🕒 Actividad reciente</h2>
-    <div class="bg-white p-4 rounded shadow max-h-60 overflow-y-auto">
-      {% for log in actividad %}
-        <div class="border-b py-2 text-sm text-gray-700">{{ log }}</div>
-      {% empty %}
-        <p class="text-gray-500">Sin actividad reciente.</p>
-      {% endfor %}
+    <div class="col">
+      <div class="stat-card text-center">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="stat-title">Espacio usado</span>
+          <i class="fas fa-hdd stat-icon"></i>
+        </div>
+        <div class="stat-value">{{ stats.espacio_usado }} MB</div>
+        <small><i class="fas fa-chart-line me-1"></i> de 100 GB disponibles</small>
+      </div>
     </div>
-  </main>
+
+    <div class="col">
+      <div class="stat-card text-center">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="stat-title">Miembros activos</span>
+          <i class="fas fa-users stat-icon"></i>
+        </div>
+        <div class="stat-value">{{ stats.miembros_activos }}</div>
+        <small><i class="fas fa-user-check me-1"></i> esta semana</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actividad reciente -->
+  <h4 class="fw-semibold mb-3"><i class="fas fa-clock text-primary me-2"></i>Actividad reciente</h4>
+  <div class="list-group">
+    {% for log in actividad %}
+      <div class="activity-item mb-3">
+        <div class="activity-icon"><i class="fas fa-upload"></i></div>
+        <div>
+          <div class="fw-bold">{{ log }}</div>
+          <div class="text-muted small">Evento registrado</div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="alert alert-info">No hay actividad reciente del equipo.</div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

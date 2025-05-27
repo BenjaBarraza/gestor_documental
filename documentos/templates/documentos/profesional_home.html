@@ -1,47 +1,130 @@
 {% extends 'documentos/base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mx-auto p-6">
-  <h2 class="text-2xl font-bold mb-4">Bienvenido, {{ user.first_name }}</h2>
-  <p class="text-gray-600 mb-6">Tipo de cuenta: <strong>Profesional</strong></p>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-  <!-- Accesos rápidos -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <a href="{% url 'documentos:subir' %}" class="bg-blue-100 hover:bg-blue-200 p-4 rounded-xl shadow">
-      📤 Subir Documento
-    </a>
-    {% comment %} <a href="{% url 'mis_documentos' %}" class="bg-green-100 hover:bg-green-200 p-4 rounded-xl shadow">
-      📋 Ver Mis Documentos
-    </a>
-    <a href="{% url 'busqueda_avanzada' %}" class="bg-yellow-100 hover:bg-yellow-200 p-4 rounded-xl shadow">
-      🔍 Búsqueda Avanzada
-    </a>
-    <a href="{% url 'etiquetas_favoritas' %}" class="bg-purple-100 hover:bg-purple-200 p-4 rounded-xl shadow">
-      🧾 Etiquetas Favoritas
-    </a> {% endcomment %}
-  </div>
+<style>
+  /* Incluye aquí solo el CSS esencial para mantener compatibilidad con Bootstrap */
+  .welcome-section, .upload-section, .documents-section, .stats-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+  }
 
-  <!-- Documentos recientes -->
-  <h3 class="text-xl font-semibold mb-3">📄 Documentos recientes</h3>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    {% for doc in documentos_recientes %}
-      <div class="p-4 border rounded shadow">
-        <h4 class="font-bold">{{ doc.nombre }}</h4>
-        <p class="text-sm text-gray-500">{{ doc.fecha_subida }}</p>
-      </div>
-    {% empty %}
-      <p class="text-gray-500">No hay documentos recientes.</p>
-    {% endfor %}
-  </div>
+  .account-type {
+    display: inline-block;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
 
-  <!-- Estadísticas -->
-  <h3 class="text-xl font-semibold mb-3">📊 Mis estadísticas</h3>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="bg-white p-4 rounded shadow text-center">
-      <p class="text-sm text-gray-500">Subidos este mes</p>
-      <p class="text-2xl font-bold">{{ stats.subidos_mes }}</p>
+  .document-card {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    border-left: 5px solid #667eea;
+    transition: all 0.3s ease;
+  }
+
+  .document-card:hover {
+    background: white;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    color: white;
+    text-align: center;
+  }
+
+  .stat-icon { font-size: 32px; margin-bottom: 10px; }
+  .stat-value { font-size: 28px; font-weight: bold; }
+  .stat-label { font-size: 14px; opacity: 0.9; }
+</style>
+
+<div class="container py-5">
+  <!-- Welcome -->
+  <div class="welcome-section text-center">
+    <h1 class="fw-bold mb-2">Bienvenido, {{ user.get_full_name|title }}</h1>
+    <div class="account-type">
+      <i class="fas fa-crown me-1"></i> Profesional
     </div>
-    <div class="bg-white p-4 rounded shadow text-center">
-      <p class="text-sm text-gray-500">Documentos compartidos</p>
-      <p class="text-2xl fon
+  </div>
+
+  <!-- Upload -->
+  <div class="upload-section text-center border border-dashed border-2 border-primary">
+    <a href="{% url 'documentos:subir' %}" class="text-decoration-none text-dark">
+      <div class="mb-3">
+        <i class="fas fa-cloud-upload-alt fa-3x text-primary"></i>
+      </div>
+      <h4 class="fw-bold">Subir Documento</h4>
+      <p class="text-muted">Haz clic aquí para agregar nuevos archivos</p>
+    </a>
+  </div>
+
+  <!-- Grid -->
+  <div class="row">
+    <!-- Documentos recientes -->
+    <div class="col-lg-8">
+      <div class="documents-section">
+        <h4 class="fw-semibold mb-4">
+          <i class="fas fa-file-alt text-primary me-2"></i>Documentos recientes
+        </h4>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+          {% for doc in documentos_recientes %}
+            <div class="col">
+              <div class="document-card">
+                <div class="fw-bold">{{ doc.nombre }}</div>
+                <small class="text-muted"><i class="fas fa-clock me-1"></i>{{ doc.fecha_subida|date:"M d, Y, H:i a" }}</small>
+              </div>
+            </div>
+          {% empty %}
+            <p class="text-muted">No hay documentos recientes.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="col-lg-4">
+      <div class="stats-section">
+        <h4 class="fw-semibold mb-4">
+          <i class="fas fa-chart-bar text-primary me-2"></i>Mis estadísticas
+        </h4>
+
+        <div class="d-grid gap-3">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-upload"></i></div>
+            <div class="stat-value">{{ stats.subidos_mes }}</div>
+            <div class="stat-label">Subidos este mes</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-share-alt"></i></div>
+            <div class="stat-value">{{ stats.compartidos }}</div>
+            <div class="stat-label">Documentos compartidos</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-hdd"></i></div>
+            <div class="stat-value">{{ stats.espacio_usado }} MB</div>
+            <div class="stat-label">Espacio utilizado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -3,10 +3,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  
     <meta charset="UTF-8">
     <title>{% block title %}Gestor Documental{% endblock %}</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Bootstrap CSS -->
@@ -24,7 +22,6 @@
         font-size: 1.2rem;
     }
 
-    /* Estilos solo en móviles: sin forzar visibilidad */
     @media (max-width: 991.98px) {
         #navbarContenido {
             flex-direction: column;
@@ -51,8 +48,7 @@
             gap: 10px;
         }
     }
-</style>
-
+    </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -74,20 +70,28 @@
     <div class="collapse navbar-collapse justify-content-end" id="navbarContenido">
       {% if user.is_authenticated %}
         <div class="d-lg-flex align-items-center gap-2 nav-mobile-group mt-2 mt-lg-0">
-          
+
+          <!-- BOTÓN DASHBOARD -->
+          <a href="{% url 'documentos:dashboard' %}" class="btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center">
+            📊 Dashboard
+          </a>
+
+          <!-- Perfil -->
           <a href="{% url 'documentos:perfil' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">
             👤 {{ user.username }}
-        </a>
+          </a>
 
-
-
+          <!-- Enlaces públicos -->
           <a href="{% url 'documentos:mis_enlaces' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">
             🔗 Enlaces Públicos
           </a>
 
+          <!-- Cerrar sesión -->
           <form method="post" action="{% url 'logout' %}" class="d-inline">
             {% csrf_token %}
-            <button type="submit" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">Cerrar sesión</button>
+            <button type="submit" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">
+              Cerrar sesión
+            </button>
           </form>
         </div>
       {% else %}
@@ -120,7 +124,6 @@
     {% endfor %}
   </div>
 {% endif %}
-
 
 <!-- CONTENIDO -->
 <div class="container-fluid px-3 my-4 flex-grow-1">
@@ -156,21 +159,17 @@
   });
 </script>
 
+<!-- Cierre automático de alertas -->
 <script>
-  // Cierra automáticamente las alertas luego de 5 segundos
   document.addEventListener("DOMContentLoaded", function () {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
       setTimeout(() => {
         bootstrap.Alert.getOrCreateInstance(alert).close();
-      }, 5000); // 5000 ms = 5 segundos
+      }, 5000);
     });
   });
 </script>
-
-
-
-
 
 </body>
 </html>

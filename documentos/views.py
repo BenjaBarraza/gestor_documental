@@ -347,15 +347,12 @@ def vista_profesional(request):
         'stats': stats
     })
 
-def redireccion_dashboard(request):
-    tipo = request.user.perfilusuario.tipo_cuenta
-    if tipo == 'profesional':
-        return redirect('documentos:vista_profesional')
-    elif tipo == 'empresarial':
-        return redirect('vista_empresarial')  # la crearemos más adelante
-
-
-
+def vista_personal(request):
+    return render(request, 'documentos/personal_home.html', {
+        'nombre': request.user.get_full_name(),
+        'correo': request.user.email,
+        'tipo': request.user.perfilusuario.tipo_cuenta
+    })
 
 
 
@@ -386,3 +383,16 @@ def vista_empresarial(request):
         'stats': stats,
         'actividad': actividad_logs
     })
+
+
+def redireccion_dashboard(request):
+    tipo = request.user.perfilusuario.tipo_cuenta
+    if tipo == 'profesional':
+        return redirect('documentos:vista_profesional')
+    elif tipo == 'empresarial':
+        return redirect('documentos:vista_empresarial')  # la crearemos más adelante
+    elif tipo == 'personal':
+        return redirect('documentos:vista_personal')
+    else:
+            # Puedes redirigir a una página de inicio, mostrar mensaje o bloquear
+            return render(request, 'documentos/dashboard_no_disponible.html')
