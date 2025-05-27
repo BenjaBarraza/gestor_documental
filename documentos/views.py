@@ -22,6 +22,10 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.contrib import messages
 from .forms import PerfilUsuarioForm
+from .utils import calcular_estadisticas_profesional
+from django.contrib.auth.models import User
+
+
 
 
 
@@ -333,3 +337,52 @@ def prueba_email(request):
         fail_silently=False,
     )
     return HttpResponse("Correo de prueba enviado a: " + request.user.email)
+
+
+def vista_profesional(request):
+    stats = calcular_estadisticas_profesional(request.user)
+    documentos_recientes = Documento.objects.filter(usuario=request.user).order_by('-fecha_subida')[:6]
+    return render(request, 'documentos/profesional_home.html', {
+        'documentos_recientes': documentos_recientes,
+        'stats': stats
+    })
+
+def redireccion_dashboard(request):
+    tipo = request.user.perfilusuario.tipo_cuenta
+    if tipo == 'profesional':
+        return redirect('documentos:vista_profesional')
+    elif tipo == 'empresarial':
+        return redirect('vista_empresarial')  # la crearemos más adelante
+
+
+
+
+
+
+def vista_empresarial(request):
+    # Suponemos que "equipo" son todos los usuarios con cuenta empresarial (o filtrado personalizado)
+    equipo = User.objects.filter(perfilusuario__tipo_cuenta='empresarial')
+    documentos_equipo = Documento.objects.filter(usuario__in=equipo)
+
+    # Estadísticas simples
+    total_documentos = documentos_equipo.count()
+    espacio_total = sum(doc.archivo.size for doc in documentos_equipo) / (1024 * 1024)  # en MB
+
+    # Miembros activos: usuarios con al menos 1 doc subido esta semana
+    inicio_semana = timezone.now() - timezone.timedelta(days=7)
+    activos = documentos_equipo.filter(fecha_subida__gte=inicio_semana).values_list('usuario', flat=True).distinct().count()
+
+    # Simulación de actividad (puedes usar una tabla LOG real más adelante)
+    actividad = documentos_equipo.order_by('-fecha_subida')[:10]
+    actividad_logs = [f"{doc.usuario.username} subió «{doc.nombre}» el {doc.fecha_subida.strftime('%d-%m-%Y %H:%M')}" for doc in actividad]
+
+    stats = {
+        'total_documentos': total_documentos,
+        'espacio_usado': round(espacio_total, 2),
+        'miembros_activos': activos
+    }
+
+    return render(request, 'documentos/empresarial_home.html', {
+        'stats': stats,
+        'actividad': actividad_logs
+    })

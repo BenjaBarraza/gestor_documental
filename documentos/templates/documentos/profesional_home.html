@@ -1,0 +1,47 @@
+{% extends 'documentos/base.html' %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+  <h2 class="text-2xl font-bold mb-4">Bienvenido, {{ user.first_name }}</h2>
+  <p class="text-gray-600 mb-6">Tipo de cuenta: <strong>Profesional</strong></p>
+
+  <!-- Accesos rápidos -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <a href="{% url 'documentos:subir' %}" class="bg-blue-100 hover:bg-blue-200 p-4 rounded-xl shadow">
+      📤 Subir Documento
+    </a>
+    {% comment %} <a href="{% url 'mis_documentos' %}" class="bg-green-100 hover:bg-green-200 p-4 rounded-xl shadow">
+      📋 Ver Mis Documentos
+    </a>
+    <a href="{% url 'busqueda_avanzada' %}" class="bg-yellow-100 hover:bg-yellow-200 p-4 rounded-xl shadow">
+      🔍 Búsqueda Avanzada
+    </a>
+    <a href="{% url 'etiquetas_favoritas' %}" class="bg-purple-100 hover:bg-purple-200 p-4 rounded-xl shadow">
+      🧾 Etiquetas Favoritas
+    </a> {% endcomment %}
+  </div>
+
+  <!-- Documentos recientes -->
+  <h3 class="text-xl font-semibold mb-3">📄 Documentos recientes</h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    {% for doc in documentos_recientes %}
+      <div class="p-4 border rounded shadow">
+        <h4 class="font-bold">{{ doc.nombre }}</h4>
+        <p class="text-sm text-gray-500">{{ doc.fecha_subida }}</p>
+      </div>
+    {% empty %}
+      <p class="text-gray-500">No hay documentos recientes.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Estadísticas -->
+  <h3 class="text-xl font-semibold mb-3">📊 Mis estadísticas</h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white p-4 rounded shadow text-center">
+      <p class="text-sm text-gray-500">Subidos este mes</p>
+      <p class="text-2xl font-bold">{{ stats.subidos_mes }}</p>
+    </div>
+    <div class="bg-white p-4 rounded shadow text-center">
+      <p class="text-sm text-gray-500">Documentos compartidos</p>
+      <p class="text-2xl fon
+{% endblock %}

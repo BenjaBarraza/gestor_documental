@@ -34,4 +34,9 @@ urlpatterns = [
     #URLs perfil de usuario 
     path('perfil/', views.perfil_usuario, name='perfil'),
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
+    path('dashboard/profesional/', views.vista_profesional, name='vista_profesional'),
+
+    path('dashboard/', views.redireccion_dashboard, name='dashboard'),
+
+
 ]

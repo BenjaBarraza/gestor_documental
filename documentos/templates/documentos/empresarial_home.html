@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex">
+  <!-- Sidebar lateral -->
+  <aside class="w-64 bg-gray-900 text-white min-h-screen p-4">
+    <h2 class="text-2xl font-bold mb-6">Gestión Empresarial</h2>
+    <ul class="space-y-4">
+      <li><a href="{% url 'invitar_usuario' %}" class="block hover:text-yellow-300">➕ Invitar usuarios</a></li>
+      <li><a href="{% url 'gestion_permisos' %}" class="block hover:text-yellow-300">🛡️ Gestionar permisos</a></li>
+      <li><a href="{% url 'carpetas_compartidas' %}" class="block hover:text-yellow-300">🗂️ Carpetas compartidas</a></li>
+      <li><a href="{% url 'documentos_equipo' %}" class="block hover:text-yellow-300">📋 Ver documentos del equipo</a></li>
+    </ul>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-6 bg-gray-100">
+    <h1 class="text-3xl font-bold mb-6">📊 Panel del Equipo</h1>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-gray-500">Documentos del equipo</p>
+        <p class="text-2xl font-bold">{{ stats.total_documentos }}</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-gray-500">Almacenamiento usado</p>
+        <p class="text-2xl font-bold">{{ stats.espacio_usado }} MB</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-gray-500">Miembros activos esta semana</p>
+        <p class="text-2xl font-bold">{{ stats.miembros_activos }}</p>
+      </div>
+    </div>
+
+    <!-- Actividad reciente -->
+    <h2 class="text-xl font-semibold mb-4">🕒 Actividad reciente</h2>
+    <div class="bg-white p-4 rounded shadow max-h-60 overflow-y-auto">
+      {% for log in actividad %}
+        <div class="border-b py-2 text-sm text-gray-700">{{ log }}</div>
+      {% empty %}
+        <p class="text-gray-500">Sin actividad reciente.</p>
+      {% endfor %}
+    </div>
+  </main>
+</div>
+{% endblock %}
