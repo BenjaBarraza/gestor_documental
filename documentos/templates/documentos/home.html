@@ -1,121 +1,342 @@
 {% extends 'documentos/base.html' %}
-{% block title %}Inicio | Gestor Documental{% endblock %}
-
+{% load static %}
 {% block content %}
-<style>
-  body {
-    font-family: 'Arial', sans-serif;
-  }
-  .header-box {
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    text-align: center;
-  }
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-  .nav-buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin: 25px 0;
-  }
+<section class="hero">
+    <div class="hero-bg-element"></div>
+    <div class="hero-bg-element"></div>
 
-  .btn-custom {
-    padding: 12px 20px;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    min-width: 140px;
-    text-align: center;
-  }
+    <div class="hero-container">
+        <h1 class="hero-title">
+            ¡Bienvenido al <span class="highlight">Gestor Docs</span>!
+        </h1>
+        <p class="hero-subtitle">
+            Gestiona y organiza todos tus documentos en un solo lugar con la máxima seguridad y eficiencia.
+        </p>
 
-  .btn-upload {
-    background-color: #2ecc71;
-  }
+        <div class="hero-buttons">
+            <a href="{% url 'documentos:subir' %}" class="btn btn-primary">
+                <i class="fas fa-cloud-upload-alt"></i> Subir Documento
+            </a>
+            <a href="{% url 'documentos:lista' %}" class="btn btn-secondary">
+                <i class="fas fa-file-alt"></i> Lista de Documentos
+            </a>
+        </div>
 
-  .btn-list {
-    background-color: #9b59b6;
-  }
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" data-target="10000">0</div>
+                <div class="stat-label">Documentos Gestionados</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="500">0</div>
+                <div class="stat-label">Usuarios Activos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="99.9">0</div>
+                <div class="stat-label">% Tiempo de Actividad</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Soporte Técnico</div>
+            </div>
+        </div>
+    </div>
+</section>
 
-  .btn-custom:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  }
+<!-- Sección de búsqueda -->
+<section class="search-section">
+    <div class="search-container">
+        <div class="search-header">
+            <h2 class="search-title">Encuentra tus documentos al instante</h2>
+            <p class="search-subtitle">Búsqueda inteligente con filtros avanzados y resultados instantáneos</p>
+        </div>
 
-  .search-box {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    max-width: 500px;
-    margin: 0 auto;
-  }
+        <div class="search-card">
+            <form class="search-form" action="{% url 'documentos:buscar' %}" method="get">
+                <div class="search-input-wrapper">
+                    <input type="text" class="search-input" name="q" placeholder="Buscar por nombre, etiqueta o tipo...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button type="submit" class="btn-search">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </form>
 
-  .search-box h3 {
-    margin-bottom: 15px;
-  }
+            <div class="search-suggestions">
+                <span class="suggestions-label">Búsquedas populares:</span>
+                <span class="suggestion-tag">Contratos</span>
+                <span class="suggestion-tag">Facturas</span>
+                <span class="suggestion-tag">Reportes</span>
+                <span class="suggestion-tag">Presentaciones</span>
+            </div>
+        </div>
+    </div>
+</section>
 
-  .search-box input[type="text"],
-  .search-box button {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 4px;
-  }
+<!-- Sección de características --> <!-- Features Section -->
+    <section class="features-section">
+        <div class="features-container">
+            <div class="features-header">
+                <h2 class="features-title">Funcionalidades que potencian tu productividad</h2>
+                <p class="features-subtitle">
+                    Descubre todas las herramientas que necesitas para gestionar tus documentos de manera eficiente
+                </p>
+            </div>
 
-  .search-box input[type="text"] {
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-  }
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3 class="feature-title">Almacenamiento Seguro</h3>
+                    <p class="feature-description">
+                        Tus documentos protegidos en la nube con encriptación de nivel empresarial
+                    </p>
+                </div>
 
-  .search-box button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    transition: background-color 0.3s;
-  }
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Colaboración en Tiempo Real</h3>
+                    <p class="feature-description">
+                        Comparte y colabora con tu equipo de manera eficiente y segura
+                    </p>
+                </div>
 
-  .search-box button:hover {
-    background-color: #2980b9;
-  }
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="feature-title">Análisis Avanzado</h3>
+                    <p class="feature-description">
+                        Obtén insights sobre el uso y rendimiento de tus documentos
+                    </p>
+                </div>
 
-  @media (max-width: 576px) {
-    .btn-custom {
-      width: 100%;
-      min-width: unset;
-    }
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Máxima Seguridad</h3>
+                    <p class="feature-description">
+                        Control de acceso granular y auditoría completa de actividades
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    .nav-buttons {
-      flex-direction: column;
-      align-items: center;
-    }
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2 class="cta-title">¿Listo para transformar tu gestión documental?</h2>
+            <p class="cta-subtitle">
+                Únete a miles de usuarios que ya confían en Gestor Docs para organizar sus documentos
+            </p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-cta-primary" onclick="startNow()">
+                    <i class="fas fa-rocket"></i>
+                    Comenzar Ahora
+                </a>
+                <a href="#" class="btn btn-cta-secondary" onclick="viewDemo()">
+                    Ver Demo
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
 
-    .search-box {
-      padding: 20px;
-    }
-  }
-</style>
+<script>
+        // Animación de números en las estadísticas
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('.stat-number[data-target]');
+            
+            numbers.forEach(number => {
+                const target = parseInt(number.getAttribute('data-target'));
+                const increment = target / 100;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    
+                    if (target === 10000) {
+                        number.textContent = Math.floor(current).toLocaleString() + '+';
+                    } else if (target === 500) {
+                        number.textContent = Math.floor(current) + '+';
+                    } else if (target === 99.9) {
+                        number.textContent = current.toFixed(1) + '%';
+                    }
+                }, 20);
+            });
+        }
 
-<div class="header-box">
-  <h1>📁 ¡Bienvenido al Gestor Docs!</h1>
-  <p>Gestiona y organiza todos tus documentos en un solo lugar</p>
-</div>
+        // Funciones de interacción
+        function uploadDocument() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.multiple = true;
+            input.accept = '.pdf,.doc,.docx,.txt,.jpg,.png';
+            
+            input.onchange = function(e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    showNotification(`${files.length} archivo(s) seleccionado(s) para subir`, 'success');
+                }
+            };
+            
+            input.click();
+        }
 
-<div class="nav-buttons">
-  <a href="{% url 'documentos:subir' %}" class="btn-custom btn-upload">📤 Subir Documento</a>
-  <a href="{% url 'documentos:lista' %}" class="btn-custom btn-list">📋 Lista de Documentos</a>
-</div>
+        function viewDocuments() {
+            showNotification('Redirigiendo a la lista de documentos...', 'info');
+        }
 
-<div class="search-box">
-  <h3>Buscar documentos</h3>
-  <form method="get" action="{% url 'documentos:buscar' %}">
-    <input type="text" name="q" placeholder="Buscar por nombre, etiqueta o tipo...">
-    <button type="submit">🔍 Buscar</button>
-  </form>
-</div>
+        function performSearch(event) {
+            event.preventDefault();
+            const query = document.getElementById('searchInput').value;
+            if (query.trim()) {
+                showNotification(`Buscando: "${query}"`, 'info');
+            } else {
+                showNotification('Por favor ingresa un término de búsqueda', 'warning');
+            }
+        }
+
+        function quickSearch(term) {
+            document.getElementById('searchInput').value = term;
+            showNotification(`Búsqueda rápida: "${term}"`, 'info');
+        }
+
+        function startNow() {
+            showNotification('¡Bienvenido! Iniciando configuración...', 'success');
+        }
+
+        function viewDemo() {
+            showNotification('Cargando demo interactiva...', 'info');
+        }
+
+        // Sistema de notificaciones
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 10px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            `;
+
+            const colors = {
+                success: 'linear-gradient(45deg, #10b981, #059669)',
+                info: 'linear-gradient(45deg, #3b82f6, #1d4ed8)',
+                warning: 'linear-gradient(45deg, #f59e0b, #d97706)',
+                error: 'linear-gradient(45deg, #ef4444, #dc2626)'
+            };
+
+            notification.style.background = colors[type] || colors.info;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Efectos de scroll
+        function handleScroll() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = 'none';
+            }
+        }
+
+        // Intersection Observer para animaciones
+        function setupAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        
+                        // Animar números cuando la sección de stats es visible
+                        if (entry.target.classList.contains('stats')) {
+                            animateNumbers();
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            // Observar elementos animables
+            document.querySelectorAll('.feature-card, .stats').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Agregar estilos de animación dinámicamente
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            setupAnimations();
+            window.addEventListener('scroll', handleScroll);
+            
+            // Animar números después de un delay
+            setTimeout(animateNumbers, 1000);
+        });
+
+        // Smooth scroll para enlaces internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
 {% endblock %}
