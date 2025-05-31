@@ -1,8 +1,279 @@
 {% extends 'documentos/base.html' %}
+{% load static %}
 
 {% block content %}
+<title>Todo por el Equipo - Tutoriales</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding-top: 80px;
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding-top: 100px;
+        }
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+        color: white;
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* ⬅️ MITAD Y MITAD */
+    gap: 40px;
+    align-items: start;
+    }
+
+    .video-section {
+        border-radius: 15px;
+        /*padding: 20px; */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .video-section:hover {
+        transform: translateY(-5px);
+    }
+
+    .video-container {
+    position: relative;
+    width: 100%;            /* ⬅️ OCUPA TODO */
+    height: 400px;          /* ⬅️ FIJAMOS ALTURA */
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;            /* ⬅️ IFRAME FULL WIDTH */
+    height: 100%;           /* ⬅️ IFRAME FULL HEIGHT */
+    border: none;
+}
+
+    .video-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .video-description {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+
+    .tutorial-list {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .tutorial-list h2 {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 10px;
+    }
+
+    .tutorial-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #ecf0f1;
+        transition: all 0.3s ease;
+    }
+
+    .tutorial-item:last-child {
+        border-bottom: none;
+    }
+
+    .tutorial-item:hover {
+        background: #f8f9fa;
+        padding-left: 10px;
+        border-radius: 8px;
+    }
+
+    .tutorial-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: white;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .tutorial-text {
+        flex: 1;
+        font-size: 1rem;
+        color: #2c3e50;
+        line-height: 1.5;
+    }
+
+    .cta-section {
+        grid-column: 1 / -1;
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .cta-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(231, 76, 60, 0.6);
+    }
+
+    @media (max-width: 768px) {
+        .content-wrapper {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+        }
+
+        .tutorial-list {
+            padding: 20px;
+        }
+
+        .tutorial-item {
+            flex-direction: column;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .tutorial-icon {
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.8s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
 <div class="container">
-    <h1>Tutorial</h1>
-    <p>Bienvenido al tutorial de uso del sistema.</p>
+    <header class="header fade-in">
+        <h1>Todo por el Equipo</h1>
+        <p>Aprende a gestionar documentos de forma profesional</p>
+    </header>
+
+    <div class="content-wrapper">
+        <section class="video-section fade-in">
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/fuQBiBb0px0?autoplay=1&mute=1?autoplay=1&mute=1" 
+                        allow="autoplay; encrypted-media" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </section>
+
+        <section class="tutorial-list fade-in">
+            <h2>¿Qué aprenderás?</h2>
+            <div class="tutorial-item">
+                <div class="tutorial-icon">1</div>
+                <div class="tutorial-text">Cómo crear tu primer documento de forma profesional y estructurada</div>
+            </div>
+            <div class="tutorial-item">
+                <div class="tutorial-icon">2</div>
+                <div class="tutorial-text">Cómo compartir documentos de forma segura con tu equipo</div>
+            </div>
+            <div class="tutorial-item">
+                <div class="tutorial-icon">3</div>
+                <div class="tutorial-text">Cómo gestionar tu perfil y configuración de cuenta</div>
+            </div>
+            <div class="tutorial-item">
+                <div class="tutorial-icon">4</div>
+                <div class="tutorial-text">Consejos para organizar tus archivos eficientemente</div>
+            </div>
+        </section>
+
+        <div class="cta-section fade-in">
+            <a href="{% url 'documentos:subir' %}" class="cta-button">Comenzar Tutorial</a>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Animación de entrada para los elementos
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'all 0.8s ease';
+        observer.observe(el);
+    });
+</script>
 {% endblock %}

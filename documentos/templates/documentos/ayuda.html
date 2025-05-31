@@ -1,92 +1,286 @@
 {% extends 'documentos/base.html' %}
 {% load static %}
 
-<!-- Toastr CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-<!-- Toastr JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-<!-- 🎨 CSS Animación Fade-In -->
+{% block content %}
 <style>
-    .fade-in {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 1s ease forwards;
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
+    main {
+        padding-top: 80px;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            padding-top: 100px;
+        }
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 50px;
+        color: white;
+    }
+
+    .header h1 {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        font-weight: 700;
+    }
+
+    .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .faq-section, .contact-section {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .faq-title, .contact-title {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+    }
+
+    .faq-title::after, .contact-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+
+    .faq-item {
+        margin-bottom: 25px;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .faq-question {
+        background: #f8f9fa;
+        padding: 20px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .faq-question h3 {
+        color: #667eea;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        padding-right: 30px;
+    }
+
+    .faq-question::after {
+        content: '+';
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.5rem;
+        color: #667eea;
+        font-weight: bold;
+        transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-question::after {
+        transform: translateY(-50%) rotate(45deg);
+    }
+
+    .faq-answer {
+        padding: 0 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .faq-item.active .faq-answer {
+        padding: 20px;
+        max-height: 300px;
+    }
+
+    .faq-answer p {
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .content-wrapper {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
         }
     }
 </style>
 
-{% block content %}
-<div class="container fade-in" style="margin-top: 100px; margin-bottom: 100px;">
-    <div style="background: rgba(255, 255, 255, 0.95); padding: 50px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);">
-        <h1 style="font-size: 36px; font-weight: bold; color: #667eea; text-align: center; margin-bottom: 30px;">Centro de Ayuda</h1>
-        <p style="font-size: 18px; color: #555; text-align: center; max-width: 700px; margin: 0 auto 40px;">
-            ¿Tienes dudas? Revisa nuestras preguntas frecuentes o envíanos tu consulta.
-        </p>
+<main style="padding-top: 130px;" class="container">
+    <header class="header fade-in">
+        <h1>Centro de Ayuda</h1>
+        <p>¿Tienes dudas? Revisa nuestras preguntas frecuentes o envíanos tu consulta</p>
+    </header>
 
-        <!-- FAQ Section -->
-        <div style="margin-bottom: 50px;">
-            <div style="margin-bottom: 30px;">
-                <h3 style="color: #764ba2; font-size: 24px;"><i class="fas fa-upload"></i> ¿Cómo subo un documento?</h3>
-                <p style="color: #555; font-size: 16px;">Ve al panel de control y haz clic en <strong>“Subir mi primer documento”</strong>.</p>
+    <div class="content-wrapper">
+        <!-- Preguntas Frecuentes -->
+        <section class="faq-section fade-in">
+            <h2 class="faq-title">Preguntas Frecuentes</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3>¿Cómo subo un documento?</h3>
+                </div>
+                <div class="faq-answer">
+                    <p>Ve al panel de control y haz clic en "Subir mi primer documento".</p>
+                </div>
             </div>
 
-            <div style="margin-bottom: 30px;">
-                <h3 style="color: #764ba2; font-size: 24px;"><i class="fas fa-share-alt"></i> ¿Cómo comparto documentos?</h3>
-                <p style="color: #555; font-size: 16px;">Después de subir un documento, genera un enlace público desde tu listado de documentos.</p>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3>¿Cómo comparto documentos?</h3>
+                </div>
+                <div class="faq-answer">
+                    <p>Genera un enlace público desde tu listado de documentos.</p>
+                </div>
             </div>
 
-            <div style="margin-bottom: 30px;">
-                <h3 style="color: #764ba2; font-size: 24px;"><i class="fas fa-user-cog"></i> ¿Cómo edito mi perfil?</h3>
-                <p style="color: #555; font-size: 16px;">Haz clic en <strong>“Configurar perfil”</strong> para actualizar tu correo electrónico y otros detalles.</p>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3>¿Cómo edito mi perfil?</h3>
+                </div>
+                <div class="faq-answer">
+                    <p>Haz clic en "Configurar perfil" para actualizar tus datos.</p>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Contact Form Section -->
-        <div style="background: #f9f9f9; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);">
-            <h3 style="color: #764ba2; font-size: 24px; text-align: center; margin-bottom: 25px;">¿Necesitas más ayuda?</h3>
-            <p style="text-align: center; color: #555; margin-bottom: 30px;">Completa el formulario y nos pondremos en contacto contigo:</p>
-
-            <form method="post" style="max-width: 600px; margin: 0 auto;">
+        <!-- Formulario de contacto -->
+        <section class="contact-section fade-in">
+            <h2 class="contact-title">¿Necesitas más ayuda?</h2>
+            <form method="post">
                 {% csrf_token %}
-                <div class="form-group" style="margin-bottom: 20px;">
+                <div class="form-group">
                     {{ form.nombre.label_tag }}
                     {{ form.nombre }}
                 </div>
-                <div class="form-group" style="margin-bottom: 20px;">
+                <div class="form-group">
                     {{ form.email.label_tag }}
                     {{ form.email }}
                 </div>
-                <div class="form-group" style="margin-bottom: 30px;">
+                <div class="form-group">
                     {{ form.mensaje.label_tag }}
                     {{ form.mensaje }}
                 </div>
-                <button type="submit" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-weight: bold; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); cursor: pointer; width: 100%;">
-                    Enviar mensaje
-                </button>
+                <button type="submit" class="submit-btn">Enviar Mensaje</button>
             </form>
-        </div>
+        </section>
     </div>
-</div>
+</main>
 
-<!-- Toastr -->
 <script>
-    {% if messages %}
-        {% for message in messages %}
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "4000",
-            };
-            toastr.success("{{ message }}");
-        {% endfor %}
-    {% endif %}
+    function toggleFaq(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+        if (!isActive) faqItem.classList.add('active');
+    }
 </script>
 {% endblock %}
