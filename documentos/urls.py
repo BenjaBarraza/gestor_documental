@@ -42,6 +42,13 @@ urlpatterns = [
     path('dashboard/', views.redireccion_dashboard, name='dashboard'),
     path('dashboard/personal/', views.vista_personal, name='vista_personal'),
 
+    # URLs de ayuda y tutoriales
+    path('tutorial/', views.tutorial_view, name='tutorial'),
+    path('explorar-funciones/', views.explorar_funciones_view, name='explorar_funciones'),
+    path('ayuda/', views.ayuda_view, name='obtener_ayuda'),
+    path('perfil/', views.configurar_perfil_view, name='configurar_perfil'),
+
+
 
 
 ]

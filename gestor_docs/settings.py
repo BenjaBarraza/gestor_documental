@@ -37,7 +37,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = 'antoniobarraza1133@gmail.com'  # tu correo de Gmail
-EMAIL_HOST_PASSWORD = 'xhgeqietvqqwgedd'  # clave de 16 dígitos
+EMAIL_HOST_PASSWORD = 'iqjpdwxplkwnbqoo'  # clave de 16 dígitos
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 

@@ -1,0 +1,92 @@
+{% extends 'documentos/base.html' %}
+{% load static %}
+
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<!-- 🎨 CSS Animación Fade-In -->
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 1s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+{% block content %}
+<div class="container fade-in" style="margin-top: 100px; margin-bottom: 100px;">
+    <div style="background: rgba(255, 255, 255, 0.95); padding: 50px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);">
+        <h1 style="font-size: 36px; font-weight: bold; color: #667eea; text-align: center; margin-bottom: 30px;">Centro de Ayuda</h1>
+        <p style="font-size: 18px; color: #555; text-align: center; max-width: 700px; margin: 0 auto 40px;">
+            ¿Tienes dudas? Revisa nuestras preguntas frecuentes o envíanos tu consulta.
+        </p>
+
+        <!-- FAQ Section -->
+        <div style="margin-bottom: 50px;">
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #764ba2; font-size: 24px;"><i class="fas fa-upload"></i> ¿Cómo subo un documento?</h3>
+                <p style="color: #555; font-size: 16px;">Ve al panel de control y haz clic en <strong>“Subir mi primer documento”</strong>.</p>
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #764ba2; font-size: 24px;"><i class="fas fa-share-alt"></i> ¿Cómo comparto documentos?</h3>
+                <p style="color: #555; font-size: 16px;">Después de subir un documento, genera un enlace público desde tu listado de documentos.</p>
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #764ba2; font-size: 24px;"><i class="fas fa-user-cog"></i> ¿Cómo edito mi perfil?</h3>
+                <p style="color: #555; font-size: 16px;">Haz clic en <strong>“Configurar perfil”</strong> para actualizar tu correo electrónico y otros detalles.</p>
+            </div>
+        </div>
+
+        <!-- Contact Form Section -->
+        <div style="background: #f9f9f9; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);">
+            <h3 style="color: #764ba2; font-size: 24px; text-align: center; margin-bottom: 25px;">¿Necesitas más ayuda?</h3>
+            <p style="text-align: center; color: #555; margin-bottom: 30px;">Completa el formulario y nos pondremos en contacto contigo:</p>
+
+            <form method="post" style="max-width: 600px; margin: 0 auto;">
+                {% csrf_token %}
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form.nombre.label_tag }}
+                    {{ form.nombre }}
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+                <div class="form-group" style="margin-bottom: 30px;">
+                    {{ form.mensaje.label_tag }}
+                    {{ form.mensaje }}
+                </div>
+                <button type="submit" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-weight: bold; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); cursor: pointer; width: 100%;">
+                    Enviar mensaje
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toastr -->
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "4000",
+            };
+            toastr.success("{{ message }}");
+        {% endfor %}
+    {% endif %}
+</script>
+{% endblock %}

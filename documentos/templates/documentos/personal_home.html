@@ -574,10 +574,29 @@
   </main>
 </div>
 
+
 <script>
-// Aquí van tus scripts: uploadFirstDocument(), showTutorial(), etc.
-// Para que no se corte, puedes mantener el contenido JS como en el original.
-// (Si lo deseas, puedo pasarte también todo el JS completo listo.)
+function uploadFirstDocument() {
+    window.location.href = "{% url 'documentos:subir' %}";
+}
+
+function showTutorial() {
+    window.location.href = "{% url 'documentos:tutorial' %}";
+}
+
+function exploreFeatures() {
+    window.location.href = "{% url 'documentos:explorar_funciones' %}";
+}
+
+function contactSupport() {
+    window.location.href = "{% url 'documentos:obtener_ayuda' %}";
+}
+
+function customizeProfile() {
+    window.location.href = "{% url 'documentos:configurar_perfil' %}";
+}
 </script>
+
+
 
 {% endblock %}
