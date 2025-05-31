@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from documentos.models import Documento
+from documentos.models import Documento, Recordatorio
 from .forms import DocumentoForm 
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
@@ -25,6 +25,8 @@ from .forms import PerfilUsuarioForm
 from .utils import calcular_estadisticas_profesional
 from django.contrib.auth.models import User
 from .forms import FormularioContactoForm
+from django.shortcuts import render, redirect
+from .forms import RecordatorioForm
 
 
 
@@ -357,33 +359,43 @@ def vista_personal(request):
 
 
 
+@login_required
 def vista_empresarial(request):
-    # Suponemos que "equipo" son todos los usuarios con cuenta empresarial (o filtrado personalizado)
     equipo = User.objects.filter(perfilusuario__tipo_cuenta='empresarial')
     documentos_equipo = Documento.objects.filter(usuario__in=equipo)
 
-    # Estadísticas simples
     total_documentos = documentos_equipo.count()
-    espacio_total = sum(doc.archivo.size for doc in documentos_equipo) / (1024 * 1024)  # en MB
+    espacio_total_gb = round(sum(doc.size or 0 for doc in documentos_equipo) / (1024 * 1024), 2)
+    inicio_semana = timezone.now() - timedelta(days=7)
+    miembros_activos = documentos_equipo.filter(fecha_subida__gte=inicio_semana).values('usuario').distinct().count()
+    documentos_compartidos = documentos_equipo.filter(is_shared=True).count()
 
-    # Miembros activos: usuarios con al menos 1 doc subido esta semana
-    inicio_semana = timezone.now() - timezone.timedelta(days=7)
-    activos = documentos_equipo.filter(fecha_subida__gte=inicio_semana).values_list('usuario', flat=True).distinct().count()
-
-    # Simulación de actividad (puedes usar una tabla LOG real más adelante)
     actividad = documentos_equipo.order_by('-fecha_subida')[:10]
-    actividad_logs = [f"{doc.usuario.username} subió «{doc.nombre}» el {doc.fecha_subida.strftime('%d-%m-%Y %H:%M')}" for doc in actividad]
+    actividad_logs = [
+        f"{doc.usuario.username} subió «{doc.nombre}» el {doc.fecha_subida.strftime('%d-%m-%Y %H:%M')}"
+        for doc in actividad
+    ]
 
     stats = {
         'total_documentos': total_documentos,
-        'espacio_usado': round(espacio_total, 2),
-        'miembros_activos': activos
+        'espacio_usado': espacio_total_gb,
+        'miembros_activos': miembros_activos,
+        'documentos_compartidos': documentos_compartidos,
     }
+
+    # 💡 Agrega recordatorios
+    from .models import Recordatorio
+    from .forms import RecordatorioForm
+    recordatorios = Recordatorio.objects.all().order_by('fecha_recordatorio')
+    form = RecordatorioForm()
 
     return render(request, 'documentos/empresarial_home.html', {
         'stats': stats,
-        'actividad': actividad_logs
+        'actividad': actividad_logs,
+        'recordatorios': recordatorios,
+        'form': form,
     })
+
 
 
 def redireccion_dashboard(request):
@@ -472,3 +484,29 @@ def ayuda_view(request):
         form = FormularioContactoForm()
 
     return render(request, 'documentos/ayuda.html', {'form': form})
+
+
+
+
+
+# Vista para crear recordatorio (solo para usuarios logueados)
+@login_required
+def crear_recordatorio(request):
+    if request.method == 'POST':
+        form = RecordatorioForm(request.POST)
+        if form.is_valid():
+            recordatorio = form.save(commit=False)
+            recordatorio.usuario = request.user
+            recordatorio.save()
+            return redirect('documentos:vista_empresarial')  # <--- ESTA ES LA URL QUE MUESTRA 'empresarial_home'
+    else:
+        form = RecordatorioForm()
+    
+    return redirect('documentos:vista_empresarial')
+
+## Vista para eliminar recordatorio (solo para usuarios logueados)
+@login_required
+def eliminar_recordatorio(request, recordatorio_id):
+    recordatorio = get_object_or_404(Recordatorio, id=recordatorio_id, usuario=request.user)
+    recordatorio.delete()
+    return redirect('documentos:vista_empresarial')

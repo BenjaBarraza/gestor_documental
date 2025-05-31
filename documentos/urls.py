@@ -49,6 +49,12 @@ urlpatterns = [
     path('perfil/', views.configurar_perfil_view, name='configurar_perfil'),
 
 
+    # URLs de recordatorios
+    path('crear_recordatorio/', views.crear_recordatorio, name='crear_recordatorio'),
+    path('eliminar_recordatorio/<int:recordatorio_id>/', views.eliminar_recordatorio, name='eliminar_recordatorio'),
+
+
+
 
 
 ]

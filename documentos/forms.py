@@ -3,6 +3,7 @@ from .models import Documento
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import PerfilUsuario
+from .models import Recordatorio
 
 # === NUEVO ===
 from pillow_heif import register_heif_opener
@@ -148,3 +149,18 @@ class FormularioContactoForm(forms.Form):
         'placeholder': 'Escribe tu mensaje aquí',
         'rows': 5
     }))
+
+
+
+# ------------------------------
+# Formulario de  recordatorio
+# ------------------------------
+
+class RecordatorioForm(forms.ModelForm):
+    class Meta:
+        model = Recordatorio
+        fields = ['titulo', 'fecha_recordatorio']
+        widgets = {
+            'fecha_recordatorio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+        }
