@@ -134,21 +134,15 @@
         }
 
         /* User Avatar Large */
-        .user-avatar-large {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 48px;
-            margin: 0 auto 30px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            animation: pulse 2s ease-in-out infinite;
-        }
+       .user-avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 30px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
 
         .user-avatar-large::before {
             content: '';
@@ -510,9 +504,14 @@
   <main class="main-content">
     <div class="welcome-card">
       <!-- Avatar -->
-      <div class="user-avatar-large">
-        <i class="fas fa-user"></i>
-      </div>
+    {% with request.user.perfilusuario as perfil %}
+        {% if perfil.foto_perfil %}
+            <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil" class="user-avatar-large">
+        {% else %}
+            <img src="{% static 'img/default-avatar.png' %}" alt="Avatar por defecto" class="user-avatar-large">
+        {% endif %}
+    {% endwith %}
+
 
       <!-- Título -->
       <h1 class="welcome-title">¡Hola, {{ user.get_full_name|default:"Usuario" }}!</h1>

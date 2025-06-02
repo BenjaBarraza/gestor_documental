@@ -1,4 +1,5 @@
 {% extends "documentos/base.html" %}
+{% load static %}
 
 {% block content %}
 <style>
@@ -14,21 +15,24 @@
         border-radius: 16px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         animation: fadeInUp 0.6s ease-out;
+        text-align: center;
     }
 
     .perfil-header {
         display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 1rem;
         margin-bottom: 2rem;
     }
 
-    .perfil-icon {
-        font-size: 3rem;
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
-        color: white;
-        padding: 1rem;
+    .foto-perfil {
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        border: 4px solid #6366f1;
     }
 
     .perfil-title {
@@ -40,6 +44,7 @@
     .perfil-info {
         display: grid;
         gap: 1.5rem;
+        margin-top: 2rem;
     }
 
     .info-item {
@@ -50,6 +55,7 @@
         transition: all 0.3s ease;
         box-shadow: 0 0 0 rgba(0, 0, 0, 0);
         cursor: default;
+        text-align: left;
     }
 
     .info-item:hover {
@@ -76,6 +82,31 @@
         font-weight: 500;
     }
 
+    .btns {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+        background: #e5e7eb;
+        color: #374151;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .btn:hover {
+        background: #d1d5db;
+        transform: translateY(-2px);
+    }
+
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -90,15 +121,19 @@
 
 <div class="perfil-container">
     <div class="perfil-header">
-        <div class="perfil-icon">👤</div>
+        {% if perfil.foto_perfil %}
+            <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil" class="foto-perfil">
+        {% else %}
+            <img src="{% static 'img/default-avatar.png' %}" alt="Foto por defecto" class="foto-perfil">
+        {% endif %}
         <h2 class="perfil-title">Mi Perfil</h2>
     </div>
 
-    <div class="d-flex justify-content-end mb-3 gap-2">
-        <a href="{% url 'documentos:home' %}" class="btn btn-light shadow-sm">
+    <div class="btns">
+        <a href="{% url 'documentos:home' %}" class="btn">
             🏠 Inicio
         </a>
-        <a href="{% url 'documentos:editar_perfil' %}" class="btn btn-light shadow-sm">
+        <a href="{% url 'documentos:editar_perfil' %}" class="btn">
             ✏️ Editar información
         </a>
     </div>

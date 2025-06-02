@@ -20,13 +20,15 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
-from django.contrib import messages
 from .forms import PerfilUsuarioForm
 from .utils import calcular_estadisticas_profesional
 from django.contrib.auth.models import User
 from .forms import FormularioContactoForm
 from django.shortcuts import render, redirect
 from .forms import RecordatorioForm
+from django.core.mail import EmailMultiAlternatives
+from .forms import RegistroUsuarioForm
+from .models import PerfilProfesional, PerfilEmpresarial  # Importa los nuevos perfiles si los tienes
 
 
 
@@ -63,6 +65,39 @@ def registrar_usuario(request):
             user.perfilusuario.tipo_cuenta = tipo
             user.perfilusuario.save()
 
+            # ✅ Capturar los campos adicionales
+            if tipo == 'Profesional':
+                profesion = request.POST.get('profesion')
+                licencia = request.POST.get('licencia')
+                telefono = request.POST.get('telefono')
+                web_profesional = request.POST.get('web_profesional')
+
+                PerfilProfesional.objects.create(
+                    usuario=user,
+                    profesion=profesion,
+                    licencia=licencia,
+                    telefono=telefono,
+                    web_profesional=web_profesional
+                )
+
+            elif tipo == 'Empresarial':
+                empresa = request.POST.get('empresa')
+                rut_empresa = request.POST.get('rut_empresa')
+                giro = request.POST.get('giro')
+                telefono_empresa = request.POST.get('telefono_empresa')
+                direccion_empresa = request.POST.get('direccion_empresa')
+                web_empresa = request.POST.get('web_empresa')
+
+                PerfilEmpresarial.objects.create(
+                    usuario=user,
+                    empresa=empresa,
+                    rut_empresa=rut_empresa,
+                    giro=giro,
+                    telefono=telefono_empresa,
+                    direccion=direccion_empresa,
+                    web_empresa=web_empresa
+                )
+
             # ✅ Enviar correo de bienvenida
             try:
                 html_bienvenida = render_to_string("emails/bienvenida.html", {
@@ -89,11 +124,9 @@ def registrar_usuario(request):
         else:
             print("❌ Formulario inválido:", form.errors)
     else:
+        # <-- Aquí estaba el problema, falta este return
         form = RegistroUsuarioForm()
-
-    return render(request, 'documentos/registro.html', {'form': form})
-
-
+        return render(request, 'documentos/registro.html', {'form': form})
 
 
 
@@ -315,19 +348,50 @@ def perfil_usuario(request):
 
 
 
+from django.contrib import messages
+from django.contrib.auth.models import User
+
 @login_required
 def editar_perfil(request):
-    perfil = request.user.perfilusuario
+    user = request.user
+    perfil = user.perfilusuario
+
     if request.method == 'POST':
-        form = PerfilUsuarioForm(request.POST, instance=perfil, user=request.user)
-        if form.is_valid():
-            request.user.email = form.cleaned_data['email']
-            request.user.save()
-            form.save()
-            return redirect('documentos:perfil')
-    else:
-        form = PerfilUsuarioForm(instance=perfil, user=request.user)
-    return render(request, 'documentos/editar_perfil.html', {'form': form})
+        nuevo_username = request.POST.get('username')
+        nuevo_email = request.POST.get('email')
+
+        # ⚡ Validar que el username no esté en uso por otro usuario
+        if User.objects.exclude(pk=user.pk).filter(username=nuevo_username).exists():
+            messages.error(request, 'El nombre de usuario ya está en uso. Por favor elige otro.')
+            return redirect('documentos:editar_perfil')
+
+        # ⚡ Validar que el email no esté en uso por otro usuario (opcional)
+        if User.objects.exclude(pk=user.pk).filter(email=nuevo_email).exists():
+            messages.error(request, 'El correo electrónico ya está en uso. Por favor elige otro.')
+            return redirect('documentos:editar_perfil')
+
+        # Actualizar datos
+        user.first_name = request.POST.get('nombre')
+        user.username = nuevo_username
+        user.email = nuevo_email
+        perfil.telefono = request.POST.get('telefono')
+        perfil.sitio_web = request.POST.get('sitio_web')
+
+        if request.FILES.get('foto_perfil'):
+            perfil.foto_perfil = request.FILES['foto_perfil']
+
+        user.save()
+        perfil.save()
+
+        messages.success(request, 'Perfil actualizado exitosamente.')
+        return redirect('documentos:perfil')
+
+    return render(request, 'documentos/editar_perfil.html', {
+        'usuario': user,
+        'perfil': perfil,
+    })
+
+
     
 
 @login_required
@@ -368,7 +432,8 @@ def vista_empresarial(request):
     espacio_total_gb = round(sum(doc.size or 0 for doc in documentos_equipo) / (1024 * 1024), 2)
     inicio_semana = timezone.now() - timedelta(days=7)
     miembros_activos = documentos_equipo.filter(fecha_subida__gte=inicio_semana).values('usuario').distinct().count()
-    documentos_compartidos = documentos_equipo.filter(is_shared=True).count()
+    documentos_compartidos = documentos_equipo.filter(enlace_publico__isnull=False).count()
+
 
     actividad = documentos_equipo.order_by('-fecha_subida')[:10]
     actividad_logs = [
@@ -386,7 +451,7 @@ def vista_empresarial(request):
     # 💡 Agrega recordatorios
     from .models import Recordatorio
     from .forms import RecordatorioForm
-    recordatorios = Recordatorio.objects.all().order_by('fecha_recordatorio')
+    recordatorios = Recordatorio.objects.filter(usuario=request.user).order_by('fecha_recordatorio')
     form = RecordatorioForm()
 
     return render(request, 'documentos/empresarial_home.html', {

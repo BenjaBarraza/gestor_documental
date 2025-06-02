@@ -127,15 +127,15 @@
 
         <div class="mb-3">
           <label for="id_first_name" class="form-label">Nombre completo</label>
-          {{ form.first_name|add_class:"form-control" }}
+          {{ form.first_name|add_class:"form-control"|attr:"placeholder:Ejemplo: Juan Pérez" }}
           {% if form.first_name.errors %}
             <div class="error">{{ form.first_name.errors.0 }}</div>
           {% endif %}
         </div>
 
-        <div class="mb-3">
+       <div class="mb-3">
           <label for="id_username" class="form-label">Nombre de usuario</label>
-          {{ form.username|add_class:"form-control" }}
+          {{ form.username|add_class:"form-control"|attr:"placeholder:Ejemplo: juanperez123" }}
           {% if form.username.errors %}
             <div class="error">{{ form.username.errors.0 }}</div>
           {% endif %}
@@ -144,7 +144,7 @@
 
         <div class="mb-3">
           <label for="id_email" class="form-label">Correo electrónico</label>
-          {{ form.email|add_class:"form-control" }}
+          {{ form.email|add_class:"form-control"|attr:"placeholder:Ejemplo: juan@email.com" }}
           {% if form.email.errors %}
             <div class="error">{{ form.email.errors.0 }}</div>
           {% endif %}
@@ -152,15 +152,18 @@
 
         <div class="mb-3">
           <label for="id_tipo_cuenta" class="form-label">Tipo de cuenta</label>
-          {{ form.tipo_cuenta|add_class:"form-select" }}
+          {{ form.tipo_cuenta|add_class:"form-select"|attr:"id:id_tipo_cuenta" }}
           {% if form.tipo_cuenta.errors %}
             <div class="error">{{ form.tipo_cuenta.errors.0 }}</div>
           {% endif %}
         </div>
 
+        <!-- Campos dinámicos -->
+        <div id="extra-fields"></div>
+
         <div class="mb-3 position-relative">
           <label for="id_password1" class="form-label">Contraseña</label>
-          {{ form.password1|add_class:"form-control" }}
+          {{ form.password1|add_class:"form-control"|attr:"placeholder:Ingresa tu contraseña" }}
           <button type="button" class="toggle-password" onclick="togglePasswordVisibility('id_password1')">👁️</button>
           {% if form.password1.errors %}
             <div class="error">{{ form.password1.errors.0 }}</div>
@@ -169,7 +172,7 @@
 
         <div class="mb-3 position-relative">
           <label for="id_password2" class="form-label">Confirmar contraseña</label>
-          {{ form.password2|add_class:"form-control" }}
+          {{ form.password2|add_class:"form-control"|attr:"placeholder:Repite tu contraseña" }}
           <button type="button" class="toggle-password" onclick="togglePasswordVisibility('id_password2')">👁️</button>
           {% if form.password2.errors %}
             <div class="error">{{ form.password2.errors.0 }}</div>
@@ -191,15 +194,78 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    function togglePasswordVisibility(id) {
-      const input = document.getElementById(id);
-      if (input.type === "password") {
-        input.type = "text";
-      } else {
-        input.type = "password";
-      }
+<script>
+  function togglePasswordVisibility(id) {
+    const input = document.getElementById(id);
+    if (input.type === "password") {
+      input.type = "text";
+    } else {
+      input.type = "password";
     }
-  </script>
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const tipoCuentaSelect = document.getElementById('id_tipo_cuenta');
+    const extraFieldsContainer = document.getElementById('extra-fields');
+
+    tipoCuentaSelect.addEventListener('change', function () {
+      const selectedValue = this.value.toLowerCase();
+      console.log('Seleccionado:', selectedValue);
+
+      extraFieldsContainer.innerHTML = ''; // Limpiar campos previos
+
+      if (selectedValue === 'profesional') {
+        extraFieldsContainer.innerHTML = `
+          <div class="mb-3">
+            <label class="form-label">Profesión</label>
+            <input type="text" name="profesion" class="form-control" placeholder="Ejemplo: Abogado, Ingeniero..." required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Número de colegiado o Licencia</label>
+            <input type="text" name="licencia" class="form-control" placeholder="Ejemplo: 12345-ABC" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Teléfono de contacto</label>
+            <input type="tel" name="telefono" class="form-control" placeholder="Ejemplo: +56 9 1234 5678">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Sitio web profesional (opcional)</label>
+            <input type="url" name="web_profesional" class="form-control" placeholder="https://tusitio.com">
+          </div>
+        `;
+      } else if (selectedValue === 'empresarial') {
+        extraFieldsContainer.innerHTML = `
+          <div class="mb-3">
+            <label class="form-label">Nombre de la empresa</label>
+            <input type="text" name="empresa" class="form-control" placeholder="Ejemplo: Gestor Docs Ltda." required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">RUT/RFC/CIF de la empresa</label>
+            <input type="text" name="rut_empresa" class="form-control" placeholder="Ejemplo: 76.123.456-7" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Giro o industria</label>
+            <input type="text" name="giro" class="form-control" placeholder="Ejemplo: Tecnología, Educación, Salud...">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Teléfono de contacto empresarial</label>
+            <input type="tel" name="telefono_empresa" class="form-control" placeholder="Ejemplo: +56 2 2345 6789">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Dirección de la empresa</label>
+            <input type="text" name="direccion_empresa" class="form-control" placeholder="Ejemplo: Av. Siempre Viva 123">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Sitio web de la empresa (opcional)</label>
+            <input type="url" name="web_empresa" class="form-control" placeholder="https://empresa.com">
+          </div>
+        `;
+      }
+    });
+  });
+</script>
+
+
+
 </body>
 </html>

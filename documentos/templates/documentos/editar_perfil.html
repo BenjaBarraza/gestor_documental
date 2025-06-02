@@ -4,8 +4,9 @@
 {% block content %}
 <style>
     body {
-    background: linear-gradient(135deg, #77838f 0%, #2b33a3ce 100%);
-  }
+        background: linear-gradient(135deg, #77838f 0%, #2b33a3ce 100%);
+    }
+
     .editar-container {
         max-width: 700px;
         margin: 4rem auto;
@@ -54,10 +55,21 @@
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
     }
 
+    .foto-preview {
+        display: block;
+        margin: 1rem auto;
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
     .btns {
         display: flex;
         gap: 1rem;
         justify-content: flex-end;
+        margin-top: 2rem;
     }
 
     .btn {
@@ -94,14 +106,7 @@
         transform: translateY(-2px);
     }
 
-    .success-message {
-        background-color: #d1fae5;
-        border: 1px solid #10b981;
-        color: #065f46;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-    }
+
 
     @keyframes fadeInUp {
         from {
@@ -115,37 +120,62 @@
     }
 </style>
 
-<div class="container" style="margin-top: 100px;"></div>
-    <div class="editar-container">
-        <h2 class="editar-title">✏️ Editar Perfil</h2>
+<div class="editar-container">
+    <h2 class="editar-title">✏️ Editar Perfil</h2>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="success-message">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
-        <form method="POST">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label for="id_email">📧 Correo electrónico</label>
-                {{ form.email }}
-            </div>
+        <div class="form-group">
+            <label for="id_nombre">📝 Nombre completo</label>
+            <input type="text" class="form-control" name="nombre" placeholder="Ej: Juan Pérez" value="{{ usuario.first_name }}">
+        </div>
 
-            <div class="form-group">
-                <label for="id_tipo_cuenta">🆔 Tipo de cuenta</label>
-                {{ form.tipo_cuenta }}
-            </div>
+        <div class="form-group">
+            <label for="id_username">👤 Nombre de usuario</label>
+            <input type="text" class="form-control" name="username" placeholder="Ej: juanperez" value="{{ usuario.username }}">
+        </div>
 
-            <div class="btns">
-                <button type="submit" class="btn btn-primary">💾 Guardar cambios</button>
-                <a href="{% url 'documentos:perfil' %}" class="btn btn-secondary">❌ Cancelar</a>
-            </div>
-    </div>
-        </form>
+        <div class="form-group">
+            <label for="id_email">📧 Correo electrónico</label>
+           <input type="email" class="form-control" name="email" placeholder="Ej: juan@email.com" value="{{ usuario.email }}">
+        </div>
+
+        <div class="form-group">
+            <label for="id_telefono">📞 Teléfono</label>
+            <input type="tel" class="form-control" name="telefono" placeholder="Ej: +56 9 1234 5678" value="{{ perfil.telefono|default_if_none:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="id_sitio_web">🌐 Sitio web</label>
+            <input type="url" class="form-control" name="sitio_web" placeholder="Ej: https://mi-sitio.com" value="{{ perfil.sitio_web|default_if_none:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="id_foto_perfil">🖼️ Foto de perfil</label>
+            {% if perfil.foto_perfil %}
+                <img id="preview" src="{{ perfil.foto_perfil.url }}" alt="Foto actual" class="foto-preview">
+            {% else %}
+                <img id="preview" src="{% static 'img/default-avatar.png' %}" alt="Foto actual" class="foto-preview">
+            {% endif %}
+            <input type="file" class="form-control" name="foto_perfil" onchange="previewImage(event)">
+        </div>
+
+        <div class="btns">
+            <button type="submit" class="btn btn-primary">💾 Guardar cambios</button>
+            <a href="{% url 'documentos:perfil' %}" class="btn btn-secondary">❌ Cancelar</a>
+        </div>
     </form>
 </div>
+
+<script>
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function(){
+        const output = document.getElementById('preview');
+        output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
 {% endblock %}
