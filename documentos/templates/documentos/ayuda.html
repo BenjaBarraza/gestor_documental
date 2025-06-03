@@ -1,6 +1,6 @@
 {% extends 'documentos/base.html' %}
 {% load static %}
-
+{% block body_class %}dashboard-personal{% endblock %}
 {% block content %}
 <style>
     * {
@@ -18,13 +18,6 @@
             padding-top: 100px;
         }
     }
-
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-    }
-
     .container {
         max-width: 1000px;
         margin: 0 auto;

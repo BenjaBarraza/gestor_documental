@@ -1,15 +1,15 @@
 {% load static %}
 
-<meta charset="UTF-8">
 <title>{% block title %}Gestor Documental{% endblock %}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="icon" href="{% static 'favicon.ico' %}">
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico.png' %}">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
+/* Avatar en navbar */
 .navbar-avatar {
     width: 30px;
     height: 30px;
@@ -18,7 +18,17 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive solo para otras cosas */
+/* Botones navbar */
+.navbar .btn {
+    transition: all 0.3s ease-in-out;
+}
+
+.navbar .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive navbar */
 @media (max-width: 991.98px) {
     #navbarContenido {
         flex-direction: column;
@@ -33,9 +43,9 @@
     }
 
     #navbarContenido .btn,
-    #navbarContenido form.d-inline {
+    #navbarContenido form.d-flex {
         width: 100%;
-        max-width: 200px;
+        max-width: 220px;
     }
 
     #navbarContenido .nav-mobile-group {
@@ -46,17 +56,42 @@
     }
 }
 
+/* Fondo por defecto */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa; /* Fondo base claro */
+}
+
+/* Fondo personalizado por página */
+/* Fondo animado para dashboard */
+body.dashboard-personal {
+  background: linear-gradient(135deg, #ffffff 0%, #0d6efd 100%);
+  background-size: 200% 200%;
+  animation: gradientMove 6s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Footer fijo si contenido es pequeño */
+html, body {
+    height: 100%;
+}
 </style>
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<!-- Notar: Bloque para agregar clases adicionales desde templates -->
+<body class="d-flex flex-column min-vh-100 {% block body_class %}{% endblock %}">
 
-<!-- NAVBAR fija -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom fixed-top">
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom fixed-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand d-flex align-items-center" href="{% url 'documentos:home' %}">
-        <span style="font-size: 1.3rem;"></span>
-        <span class="ms-2">Gestor Docs</span>
+        <i class="bi bi-folder-fill" style="font-size: 1.5rem; color: #0d6efd;"></i>
+        <span class="ms-2 fw-bold">Gestor Docs</span>
     </a>
 
     <!-- Botón hamburguesa -->
@@ -70,11 +105,11 @@
         <div class="d-lg-flex align-items-center gap-2 nav-mobile-group mt-2 mt-lg-0">
 
           <!-- BOTÓN DASHBOARD -->
-          <a href="{% url 'documentos:dashboard' %}" class="btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center">
+          <a href="{% url 'documentos:dashboard' %}" class="btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2">
             📊 Dashboard
           </a>
 
-          <!-- Perfil -->
+          <!-- PERFIL CON FOTO -->
           {% with request.user.perfilusuario as perfil %}
             <a href="{% url 'documentos:perfil' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center gap-2">
                 {% if perfil.foto_perfil %}
@@ -86,43 +121,40 @@
             </a>
           {% endwith %}
 
-
-          <!-- Enlaces públicos -->
-          <a href="{% url 'documentos:mis_enlaces' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">
+          <!-- ENLACES PÚBLICOS -->
+          <a href="{% url 'documentos:mis_enlaces' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center gap-2">
             🔗 Enlaces Públicos
           </a>
 
-          <!-- Cerrar sesión -->
-          <form method="post" action="{% url 'logout' %}" class="d-inline">
+          <!-- CERRAR SESIÓN -->
+          <form method="post" action="{% url 'logout' %}" class="d-flex">
             {% csrf_token %}
-            <button type="submit" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">
-              Cerrar sesión
+            <button type="submit" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center gap-2">
+              🚪 Cerrar sesión
             </button>
           </form>
         </div>
       {% else %}
         <div class="d-lg-flex align-items-center gap-2 nav-mobile-group mt-2 mt-lg-0">
-          <a href="{% url 'login' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">Iniciar sesión</a>
-          <a href="{% url 'documentos:registrar' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">Registrarse</a>
+          <a href="{% url 'login' %}" class="btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center">Iniciar sesión</a>
+          <a href="{% url 'documentos:registrar' %}" class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center text-white">Registrarse</a>
         </div>
       {% endif %}
     </div>
   </div>
 </nav>
 
-<!-- MENSAJES (comentado) -->
-
-<!-- CONTENIDO -->
-<main class="container-fluid px-3 flex-grow-1">
+<!-- CONTENIDO PRINCIPAL -->
+<main class="container-fluid px-3 flex-grow-1 mt-5 pt-4">
   {% block content %}
   {% endblock %}
 </main>
 
 <!-- FOOTER -->
-<footer class="bg-light text-center text-muted py-3 border-top mt-auto">
+<footer class="bg-light text-center text-muted py-3 border-top mt-auto shadow-sm">
   <div class="container">
     <small>
-      Sistema de Gestión Documental © {% now "Y" %} | Desarrollado por BenjaTech 🚀
+      Sistema de Gestión Documental © {% now "Y" %} | Desarrollado por <strong>BenjaTech 🚀</strong>
     </small>
   </div>
 </footer>
@@ -130,7 +162,7 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Script para cerrar menú hamburguesa solo si se hace clic fuera -->
+<!-- Script para cerrar menú hamburguesa si haces clic afuera -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const navbar = document.getElementById("navbarContenido");

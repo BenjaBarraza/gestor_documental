@@ -1,9 +1,9 @@
 {% extends 'documentos/base.html' %}
 {% block title %}Mis Enlaces Públicos{% endblock %}
-
+{% block body_class %}dashboard-personal{% endblock %}
 {% block content %}
 <div class="container my-5">
-  <h2 class="text-primary mb-4 text-center">🔗 Mis Enlaces Públicos</h2>
+  <h2 class="text-primary mb-4 text-center text-black">🔗 Mis Enlaces Públicos</h2>
 
   {% if documentos %}
     <div class="table-responsive">
@@ -55,7 +55,7 @@
       </table>
     </div>
   {% else %}
-    <div class="alert alert-warning text-center">
+    <div class="text-center p-4 bg-light rounded shadow-sm mt-4">
       No has generado enlaces públicos aún.
     </div>
   {% endif %}

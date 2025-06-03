@@ -1,11 +1,11 @@
 {% extends 'documentos/base.html' %}
 {% load etiquetas_tags %}
-
+{% block body_class %}dashboard-personal{% endblock %}
 {% block title %}Tus Documentos | Gestor Documental{% endblock %}
 
 {% block content %}
 <div class="header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-  <h2 class="mb-0">Tus Documentos</h2>
+  <h2 class="mb-0">Tus Documentos </h2>
   <a href="{% url 'documentos:home' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">🏠 Inicio</a>
 </div>
 
@@ -69,17 +69,22 @@
     {% endfor %}
   </ul>
 {% else %}
-  <div class="alert alert-secondary text-center mt-4">
-    <p class="mb-2">No tienes documentos aún.</p>
-    <a href="{% url 'documentos:subir' %}" class="btn btn-success">＋ Subir tu primer documento</a>
+  <div class="text-center p-5 bg-white rounded shadow-sm mt-5" style="max-width: 600px; margin: auto;">
+    <div style="font-size: 48px; color: #6c757d;">📂</div>
+    <h4 class="mt-3 text-secondary">Aún no tienes documentos</h4>
+    <p class="text-muted">¡Empieza a gestionar tus archivos de manera segura y eficiente!</p>
+    <a href="{% url 'documentos:subir' %}" class="btn btn-primary mt-3">
+      ＋ Subir tu primer documento
+    </a>
   </div>
+
 {% endif %}
 
-<!-- Buscador -->
+<!-- Buscador 
 <form method="get" action="{% url 'documentos:buscar' %}" class="search-form mt-4 d-flex flex-wrap gap-2">
   <input type="text" name="q" placeholder="Buscar por nombre, etiqueta o tipo..." class="form-control">
   <button type="submit" class="btn btn-primary">🔍 Buscar</button>
-</form>
+</form>-->
 
 <!-- Modal Bootstrap para confirmar eliminación -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
