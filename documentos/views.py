@@ -121,10 +121,13 @@ def registrar_usuario(request):
             messages.success(request, '🎉 ¡Registro exitoso! Te hemos enviado un correo de bienvenida.')
 
             return redirect('login')
+
         else:
             print("❌ Formulario inválido:", form.errors)
+            # 👇 Agrega este return
+            return render(request, 'documentos/registro.html', {'form': form})
+
     else:
-        # <-- Aquí estaba el problema, falta este return
         form = RegistroUsuarioForm()
         return render(request, 'documentos/registro.html', {'form': form})
 
