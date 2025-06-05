@@ -48,6 +48,26 @@ RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY')
 RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY')
 
 
+# --- Configuración de seguridad ---
+if not DEBUG:
+    # Redirigir HTTP a HTTPS
+    SECURE_SSL_REDIRECT = True
+
+    # Cookies seguras (solo por HTTPS)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Protección HSTS (HTTPS Strict Transport Security)
+    SECURE_HSTS_SECONDS = 31536000   # 1 año
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Prevención de contenido inseguro
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+
+    # No permitir que se embeba en iframes (clickjacking protection)
+    X_FRAME_OPTIONS = 'DENY'
 
 
 
