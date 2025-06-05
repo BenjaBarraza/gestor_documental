@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from decouple import config
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
@@ -22,11 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i=$f##zm$9fx0zh+xz+enq$7ha)o6pvr&xw+pci7sdaj+7ajfw'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['gestor-documental-c1tp.onrender.com', '127.0.0.1', 'localhost']
 
@@ -40,6 +37,16 @@ EMAIL_HOST_USER = 'antoniobarraza1133@gmail.com'  # tu correo de Gmail
 EMAIL_HOST_PASSWORD = 'iqjpdwxplkwnbqoo'  # clave de 16 dígitos
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+# settings.py
+
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY')
+RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY')
+
 
 
 

@@ -29,6 +29,8 @@ from .forms import RecordatorioForm
 from django.core.mail import EmailMultiAlternatives
 from .forms import RegistroUsuarioForm
 from .models import PerfilProfesional, PerfilEmpresarial  # Importa los nuevos perfiles si los tienes
+import requests
+from django.conf import settings
 
 
 
@@ -56,80 +58,107 @@ def home(request):
 
 
 
+
+
 def registrar_usuario(request):
     if request.method == 'POST':
         form = RegistroUsuarioForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            tipo = form.cleaned_data['tipo_cuenta']
-            user.perfilusuario.tipo_cuenta = tipo
-            user.perfilusuario.save()
 
-            # ✅ Capturar los campos adicionales
-            if tipo == 'Profesional':
-                profesion = request.POST.get('profesion')
-                licencia = request.POST.get('licencia')
-                telefono = request.POST.get('telefono')
-                web_profesional = request.POST.get('web_profesional')
+        # Capturar la respuesta de reCAPTCHA
+        recaptcha_response = request.POST.get('g-recaptcha-response')
 
-                PerfilProfesional.objects.create(
-                    usuario=user,
-                    profesion=profesion,
-                    licencia=licencia,
-                    telefono=telefono,
-                    web_profesional=web_profesional
-                )
+        data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
 
-            elif tipo == 'Empresarial':
-                empresa = request.POST.get('empresa')
-                rut_empresa = request.POST.get('rut_empresa')
-                giro = request.POST.get('giro')
-                telefono_empresa = request.POST.get('telefono_empresa')
-                direccion_empresa = request.POST.get('direccion_empresa')
-                web_empresa = request.POST.get('web_empresa')
+        if result.get('success'):
+            # ✅ reCAPTCHA correcto
+            if form.is_valid():
+                user = form.save()
+                tipo = form.cleaned_data['tipo_cuenta']
+                user.perfilusuario.tipo_cuenta = tipo
+                user.perfilusuario.save()
 
-                PerfilEmpresarial.objects.create(
-                    usuario=user,
-                    empresa=empresa,
-                    rut_empresa=rut_empresa,
-                    giro=giro,
-                    telefono=telefono_empresa,
-                    direccion=direccion_empresa,
-                    web_empresa=web_empresa
-                )
+                # ✅ Capturar los campos adicionales
+                if tipo == 'Profesional':
+                    profesion = request.POST.get('profesion')
+                    licencia = request.POST.get('licencia')
+                    telefono = request.POST.get('telefono')
+                    web_profesional = request.POST.get('web_profesional')
 
-            # ✅ Enviar correo de bienvenida
-            try:
-                html_bienvenida = render_to_string("emails/bienvenida.html", {
-                    'usuario': user,
-                    'request': request,
+                    PerfilProfesional.objects.create(
+                        usuario=user,
+                        profesion=profesion,
+                        licencia=licencia,
+                        telefono=telefono,
+                        web_profesional=web_profesional
+                    )
+
+                elif tipo == 'Empresarial':
+                    empresa = request.POST.get('empresa')
+                    rut_empresa = request.POST.get('rut_empresa')
+                    giro = request.POST.get('giro')
+                    telefono_empresa = request.POST.get('telefono_empresa')
+                    direccion_empresa = request.POST.get('direccion_empresa')
+                    web_empresa = request.POST.get('web_empresa')
+
+                    PerfilEmpresarial.objects.create(
+                        usuario=user,
+                        empresa=empresa,
+                        rut_empresa=rut_empresa,
+                        giro=giro,
+                        telefono=telefono_empresa,
+                        direccion=direccion_empresa,
+                        web_empresa=web_empresa
+                    )
+
+                # ✅ Enviar correo de bienvenida
+                try:
+                    html_bienvenida = render_to_string("emails/bienvenida.html", {
+                        'usuario': user,
+                        'request': request,
+                    })
+
+                    email = EmailMultiAlternatives(
+                        subject='🎉 ¡Bienvenido a Gestor Docs!',
+                        body='Tu cliente de correo no admite HTML.',
+                        from_email=None,
+                        to=[user.email],
+                    )
+                    email.attach_alternative(html_bienvenida, "text/html")
+                    email.send()
+                    print(f"✅ Correo de bienvenida enviado a {user.email}")
+                except Exception as e:
+                    print("❌ Error al enviar correo de bienvenida:", e)
+
+                # ✅ Mensaje de éxito
+                messages.success(request, '🎉 ¡Registro exitoso! Te hemos enviado un correo de bienvenida.')
+                return redirect('login')
+
+            else:
+                print("❌ Formulario inválido:", form.errors)
+                return render(request, 'documentos/registro.html', {
+                    'form': form,
+                    'recaptcha_site_key': settings.RECAPTCHA_SITE_KEY
                 })
-
-                email = EmailMultiAlternatives(
-                    subject='🎉 ¡Bienvenido a Gestor Docs!',
-                    body='Tu cliente de correo no admite HTML.',
-                    from_email=None,
-                    to=[user.email],
-                )
-                email.attach_alternative(html_bienvenida, "text/html")
-                email.send()
-                print(f"✅ Correo de bienvenida enviado a {user.email}")
-            except Exception as e:
-                print("❌ Error al enviar correo de bienvenida:", e)
-
-            # ✅ Mensaje de éxito
-            messages.success(request, '🎉 ¡Registro exitoso! Te hemos enviado un correo de bienvenida.')
-
-            return redirect('login')
-
         else:
-            print("❌ Formulario inválido:", form.errors)
-            # 👇 Agrega este return
-            return render(request, 'documentos/registro.html', {'form': form})
+            # ❌ reCAPTCHA inválido
+            messages.error(request, 'Por favor verifica que no eres un robot.')
+            return render(request, 'documentos/registro.html', {
+                'form': form,
+                'recaptcha_site_key': settings.RECAPTCHA_SITE_KEY
+            })
 
     else:
         form = RegistroUsuarioForm()
-        return render(request, 'documentos/registro.html', {'form': form})
+        return render(request, 'documentos/registro.html', {
+            'form': form,
+            'recaptcha_site_key': settings.RECAPTCHA_SITE_KEY
+        })
+
 
 
 
