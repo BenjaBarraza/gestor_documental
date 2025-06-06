@@ -228,10 +228,18 @@ def buscar_documentos(request):
 
 
 
+import mimetypes
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
+import docx  # para .docx
+import openpyxl  # para .xlsx
+import os
+
 @login_required
 def previsualizar_documento(request, documento_id):
     documento = get_object_or_404(Documento, id=documento_id)
 
+    # Seguridad: solo dueño o admin puede ver
     if not request.user.is_superuser and documento.usuario != request.user:
         return render(request, 'documentos/403.html', status=403)
 
@@ -239,13 +247,40 @@ def previsualizar_documento(request, documento_id):
     es_pdf = mimetype == 'application/pdf'
     es_imagen = mimetype and mimetype.startswith('image/')
     es_video = mimetype and mimetype.startswith('video/')
+    es_docx = mimetype == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    es_xlsx = mimetype == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+    archivo_url_absoluto = request.build_absolute_uri(documento.archivo.url)
+
+    contenido_docx = None
+    contenido_xlsx = None
+
+    if es_docx:
+        ruta_local = documento.archivo.path
+        doc = docx.Document(ruta_local)
+        contenido_docx = [p.text for p in doc.paragraphs if p.text.strip() != '']
+
+    if es_xlsx:
+        ruta_local = documento.archivo.path
+        wb = openpyxl.load_workbook(ruta_local)
+        hoja = wb.active
+
+        contenido_xlsx = []
+        for fila in hoja.iter_rows(values_only=True):
+            contenido_xlsx.append(fila)
 
     return render(request, 'documentos/previsualizar.html', {
         'documento': documento,
         'es_pdf': es_pdf,
         'es_imagen': es_imagen,
         'es_video': es_video,
+        'es_docx': es_docx,
+        'es_xlsx': es_xlsx,
+        'contenido_docx': contenido_docx,
+        'contenido_xlsx': contenido_xlsx,
+        'archivo_url_absoluto': archivo_url_absoluto,
     })
+
 
 
 

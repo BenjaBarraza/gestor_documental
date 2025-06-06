@@ -131,9 +131,15 @@
   <div class="error-box">
     <h3>Formato no soportado para previsualización</h3>
     <p>Este tipo de archivo no puede mostrarse directamente en el navegador.</p>
+
     <div class="actions">
       <a href="{{ documento.archivo.url }}" download class="btn btn-success">⬇️ Descargar archivo</a>
     </div>
+
+    <a href="{{ documento.archivo.url }}" target="_blank" class="btn btn-outline-primary">
+        🌐 Abrir en nueva pestaña
+    </a>
+
   </div>
 {% endif %}
 

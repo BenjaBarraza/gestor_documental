@@ -58,11 +58,13 @@ class DocumentoForm(forms.ModelForm):
                 tipos_permitidos = [
                     'application/pdf',
                     'image/jpeg', 'image/png', 'image/webp',
-                    'application/msword',
-                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'application/msword',  # .doc (viejo Word)
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # .docx
+                    'application/vnd.ms-excel',  # .xls
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',  # .xlsx
                     'video/mp4', 'video/webm', 'video/ogg',
-                    'application/octet-stream'
                 ]
+
                 if content_type not in tipos_permitidos:
                     raise forms.ValidationError(f"Tipo de archivo no permitido: {content_type}")
 
