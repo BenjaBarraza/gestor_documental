@@ -53,16 +53,22 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+    # HTTP Strict Transport Security (HSTS)
     SECURE_HSTS_SECONDS = 31536000  # 1 año
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
-    # Security Headers
+    # Content Type Sniffing Protection
     SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # XSS Protection
     SECURE_BROWSER_XSS_FILTER = True
+
+    # Clickjacking Protection
     X_FRAME_OPTIONS = 'DENY'
 
-    # Content Security Policy (CSP)
+    # Content Security Policy (CSP) - evita carga de scripts no autorizados
     CSP_DEFAULT_SRC = ("'self'",)
     CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com', "'unsafe-inline'")
     CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com')
@@ -78,6 +84,7 @@ if not DEBUG:
         "microphone": "()",
         "payment": "()",
     }
+
 
 
 
@@ -116,6 +123,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',  # Middleware para Content Security Policy
 
 ]
 
