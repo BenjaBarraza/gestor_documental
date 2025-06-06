@@ -48,26 +48,37 @@ RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY')
 RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY')
 
 
-# --- Configuración de seguridad ---
 if not DEBUG:
-    # Redirigir HTTP a HTTPS
+    # HTTPS Settings
     SECURE_SSL_REDIRECT = True
-
-    # Cookies seguras (solo por HTTPS)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-
-    # Protección HSTS (HTTPS Strict Transport Security)
-    SECURE_HSTS_SECONDS = 31536000   # 1 año
+    SECURE_HSTS_SECONDS = 31536000  # 1 año
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
-    # Prevención de contenido inseguro
+    # Security Headers
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
-
-    # No permitir que se embeba en iframes (clickjacking protection)
     X_FRAME_OPTIONS = 'DENY'
+
+    # Content Security Policy (CSP)
+    CSP_DEFAULT_SRC = ("'self'",)
+    CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com', "'unsafe-inline'")
+    CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com')
+    CSP_SCRIPT_SRC = ("'self'", 'https://www.google.com', 'https://www.gstatic.com', "'unsafe-inline'")
+
+    # Referrer Policy
+    REFERRER_POLICY = "no-referrer-when-downgrade"
+
+    # Permissions Policy (antes Feature-Policy)
+    PERMISSIONS_POLICY = {
+        "geolocation": "()",
+        "camera": "()",
+        "microphone": "()",
+        "payment": "()",
+    }
+
 
 
 
@@ -93,6 +104,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'documentos',
     'widget_tweaks',
+    'csp',
 ]
 
 MIDDLEWARE = [
