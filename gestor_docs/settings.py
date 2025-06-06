@@ -48,6 +48,7 @@ RECAPTCHA_SITE_KEY = config('RECAPTCHA_SITE_KEY')
 RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY')
 
 
+# Security settings
 if not DEBUG:
     # HTTPS Settings
     SECURE_SSL_REDIRECT = True
@@ -55,7 +56,7 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
 
     # HTTP Strict Transport Security (HSTS)
-    SECURE_HSTS_SECONDS = 31536000  # 1 año
+    SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
@@ -68,7 +69,7 @@ if not DEBUG:
     # Clickjacking Protection
     X_FRAME_OPTIONS = 'DENY'
 
-    # Content Security Policy (CSP) - evita carga de scripts no autorizados
+    # Content Security Policy (CSP)
     CSP_DEFAULT_SRC = ("'self'",)
     CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com', "'unsafe-inline'")
     CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com')
@@ -77,13 +78,22 @@ if not DEBUG:
     # Referrer Policy
     REFERRER_POLICY = "no-referrer-when-downgrade"
 
-    # Permissions Policy (antes Feature-Policy)
+    # Permissions Policy (ahora totalmente definida)
     PERMISSIONS_POLICY = {
-        "geolocation": "()",
+        "accelerometer": "()",
+        "autoplay": "()",
         "camera": "()",
+        "clipboard-write": "()",
+        "fullscreen": "*",  # permitido (sino no podrías ver documentos fullscreen)
+        "geolocation": "()",
+        "gyroscope": "()",
+        "magnetometer": "()",
         "microphone": "()",
         "payment": "()",
+        "usb": "()",
+        "xr-spatial-tracking": "()"
     }
+
 
 
 
