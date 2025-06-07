@@ -72,28 +72,43 @@ if not DEBUG:
 
     # Content Security Policy (CSP)
     CSP_DEFAULT_SRC = ("'self'",)
-    CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com', "'unsafe-inline'")
-    CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com')
-    CSP_SCRIPT_SRC = ("'self'", 'https://www.google.com', 'https://www.gstatic.com', "'unsafe-inline'")
+CSP_STYLE_SRC = (
+    "'self'",
+    'https://fonts.googleapis.com',
+    'https://cdn.jsdelivr.net',      # ✅ Para Bootstrap CSS
+    "'unsafe-inline'",
+)
+CSP_FONT_SRC = (
+    "'self'",
+    'https://fonts.gstatic.com',
+)
+CSP_SCRIPT_SRC = (
+    "'self'",
+    'https://cdn.jsdelivr.net',      # ✅ Para Bootstrap JS
+    'https://www.google.com',
+    'https://www.gstatic.com',
+    "'unsafe-inline'",
+)
 
-    # Referrer Policy
-    REFERRER_POLICY = "no-referrer-when-downgrade"
 
-    # Permissions Policy (ahora totalmente definida)
-    PERMISSIONS_POLICY = {
-        "accelerometer": "()",
-        "autoplay": "()",
-        "camera": "()",
-        "clipboard-write": "()",
-        "fullscreen": "*",  # permitido (sino no podrías ver documentos fullscreen)
-        "geolocation": "()",
-        "gyroscope": "()",
-        "magnetometer": "()",
-        "microphone": "()",
-        "payment": "()",
-        "usb": "()",
-        "xr-spatial-tracking": "()"
-    }
+# Referrer Policy
+REFERRER_POLICY = "no-referrer-when-downgrade"
+
+# Permissions Policy (ahora totalmente definida)
+PERMISSIONS_POLICY = {
+    "accelerometer": "()",
+    "autoplay": "()",
+    "camera": "()",
+    "clipboard-write": "()",
+    "fullscreen": "*",  # permitido (sino no podrías ver documentos fullscreen)
+    "geolocation": "()",
+    "gyroscope": "()",
+    "magnetometer": "()",
+    "microphone": "()",
+    "payment": "()",
+    "usb": "()",
+    "xr-spatial-tracking": "()"
+}
 
 
 
