@@ -255,7 +255,7 @@
             </div>
         {% endif %}
 
-        <form method="post" action="{% url 'login' %}">
+        <form method="post" action="{% url 'usuarios:login' %}">
             {% csrf_token %}
             <div class="form-group">
                 <label for="id_username" class="form-label">Nombre de usuario</label>
@@ -266,7 +266,7 @@
                 <label for="id_password" class="form-label">Contraseña</label>
                 <div class="password-group">
                     {{ form.password|add_class:"form-input" }}
-                    <a href="{% url 'documentos:password_reset' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    <a href="{% url 'usuarios:password_reset' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
                 </div>
             </div>
 
@@ -281,7 +281,7 @@
         </form>
 
         <div class="register-link">
-            ¿No tienes una cuenta? <a href="{% url 'documentos:registrar' %}">Regístrate</a>
+            ¿No tienes una cuenta? <a href="{% url 'usuarios:registro' %}">Regístrate</a>
         </div>
     </div>
 </body>

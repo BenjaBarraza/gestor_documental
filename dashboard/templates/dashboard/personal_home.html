@@ -557,10 +557,6 @@
             <div class="quick-action-icon"><i class="fas fa-life-ring"></i></div>
             <div class="quick-action-text">Obtener ayuda</div>
           </div>
-          <div class="quick-action-item" onclick="customizeProfile()">
-            <div class="quick-action-icon"><i class="fas fa-cog"></i></div>
-            <div class="quick-action-text">Configurar perfil</div>
-          </div>
         </div>
       </div>
     </div>
@@ -574,19 +570,15 @@ function uploadFirstDocument() {
 }
 
 function showTutorial() {
-    window.location.href = "{% url 'documentos:tutorial' %}";
+    window.location.href = "{% url 'tutoriales:tutorial' %}";
 }
 
 function exploreFeatures() {
-    window.location.href = "{% url 'documentos:explorar_funciones' %}";
+    window.location.href = "{% url 'tutoriales:explorar_funciones' %}";
 }
 
 function contactSupport() {
-    window.location.href = "{% url 'documentos:obtener_ayuda' %}";
-}
-
-function customizeProfile() {
-    window.location.href = "{% url 'documentos:configurar_perfil' %}";
+    window.location.href = "{% url 'tutoriales:ayuda' %}";
 }
 </script>
 

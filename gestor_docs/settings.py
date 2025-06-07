@@ -14,6 +14,7 @@ from decouple import config
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
+from django.urls import reverse_lazy
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -122,6 +123,14 @@ INSTALLED_APPS = [
     'documentos',
     'widget_tweaks',
     'csp',
+
+    # Mis apps
+    'usuarios',
+    'publico',
+    'emails',
+    'dashboard',
+    'tutoriales',
+    'recordatorios',
 ]
 
 MIDDLEWARE = [
@@ -210,9 +219,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 # --- Autenticación ---
-LOGIN_URL = '/accounts/login/'               # A dónde redirige si no estás logueado
-LOGIN_REDIRECT_URL = '/'                     # A dónde te envía después de iniciar sesión
-LOGOUT_REDIRECT_URL = '/'                    # A dónde te envía después de cerrar sesión
+LOGIN_URL = '/usuarios/login/'          # ✅ Esto redirige correctamente a tu nueva app de login
+LOGIN_REDIRECT_URL = '/dashboard/'      # ✅ Después de loguearte te manda a documentos (tu home)
+LOGOUT_REDIRECT_URL = reverse_lazy('documentos:home')             # ✅ Logout te manda al home
+
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

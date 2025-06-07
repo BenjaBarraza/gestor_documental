@@ -565,7 +565,7 @@
                             <span>📝</span> 
                             <strong>{{ recordatorio.titulo }}:</strong> {{ recordatorio.fecha_recordatorio|date:"d \d\e F" }}
                         </div>
-                        <form method="post" action="{% url 'documentos:eliminar_recordatorio' recordatorio.id %}">
+                        <form method="post" action="{% url 'recordatorios:eliminar_recordatorio' recordatorio.id %}">
                             {% csrf_token %}
                             <button type="submit" title="Eliminar">
                                 🗑️
@@ -578,7 +578,7 @@
                 </ul>
 
                 <!-- Formulario para agregar recordatorio -->
-                <form method="post" action="{% url 'documentos:crear_recordatorio' %}" style="margin-top: 20px;">
+                <form method="post" action="{% url 'recordatorios:crear_recordatorio' %}" style="margin-top: 20px;">
                     {% csrf_token %}
                     <div>
                         {{ form.titulo.label_tag }}

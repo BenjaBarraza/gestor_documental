@@ -105,13 +105,13 @@ html, body {
         <div class="d-lg-flex align-items-center gap-2 nav-mobile-group mt-2 mt-lg-0">
 
           <!-- BOTÓN DASHBOARD -->
-          <a href="{% url 'documentos:dashboard' %}" class="btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2">
+          <a href="{% url 'dashboard:dashboard' %}" class="btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2">
             📊 Dashboard
           </a>
 
           <!-- PERFIL CON FOTO -->
           {% with request.user.perfilusuario as perfil %}
-            <a href="{% url 'documentos:perfil' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center gap-2">
+            <a href="{% url 'usuarios:perfil' %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center gap-2">
                 {% if perfil.foto_perfil %}
                     <img src="{{ perfil.foto_perfil.url }}" alt="Foto perfil" class="navbar-avatar">
                 {% else %}
@@ -127,7 +127,7 @@ html, body {
           </a>
 
           <!-- CERRAR SESIÓN -->
-          <form method="post" action="{% url 'logout' %}" class="d-flex">
+          <form method="post" action="{% url 'usuarios:logout' %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center gap-2">
               🚪 Cerrar sesión
@@ -136,8 +136,8 @@ html, body {
         </div>
       {% else %}
         <div class="d-lg-flex align-items-center gap-2 nav-mobile-group mt-2 mt-lg-0">
-          <a href="{% url 'login' %}" class="btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center">Iniciar sesión</a>
-          <a href="{% url 'documentos:registrar' %}" class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center text-white">Registrarse</a>
+          <a href="{% url 'usuarios:login' %}" class="btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center">Iniciar sesión</a>
+          <a href="{% url 'usuarios:registro' %}" class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center text-white">Registrarse</a>
         </div>
       {% endif %}
     </div>

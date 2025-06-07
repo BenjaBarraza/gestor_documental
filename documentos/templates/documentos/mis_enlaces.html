@@ -129,14 +129,18 @@
 
   document.getElementById('confirmarEliminarBtn').addEventListener('click', function () {
     if (docAEliminarId) {
-      fetch(`/eliminar_enlace/${docAEliminarId}/`, {
+      fetch(`/documentos/eliminar-enlace/${docAEliminarId}/`, {  <!-- ✅ Aseguramos prefijo correcto -->
         method: 'POST',
         headers: {
           'X-CSRFToken': '{{ csrf_token }}',
+          'X-Requested-With': 'XMLHttpRequest',  <!-- ✅ Añadido para Django distinga AJAX -->
           'Content-Type': 'application/json',
         },
       })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) throw new Error('Error en la respuesta del servidor');
+        return response.json();
+      })
       .then((data) => {
         if (data.success || data.status === 'success') {
           const row = document.getElementById(`row-${docAEliminarId}`);

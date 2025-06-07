@@ -136,7 +136,7 @@
         <a href="{% url 'documentos:home' %}">← Volver al inicio</a>
       </div>
 
-      <form method="post" action="{% url 'documentos:registrar' %}">
+      <form method="post" action="{% url 'usuarios:registro' %}">
         {% csrf_token %}
 
         <div class="mb-3">
@@ -202,7 +202,7 @@
       </form>
 
       <div class="login-link">
-        ¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+        <a href="{% url 'usuarios:login' %}">Inicia sesión</a>
       </div>
 
       <p class="terms">

@@ -1,23 +1,15 @@
 from django import forms
 from .models import Documento
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from .models import PerfilUsuario
-from .models import Recordatorio
-
-# === NUEVO ===
 from pillow_heif import register_heif_opener
 from PIL import Image
 import os
 import io
-import sys
+
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 register_heif_opener()
 
-# ------------------------------
-# Formulario para subir documentos
-# ------------------------------
+
 class DocumentoForm(forms.ModelForm):
     class Meta:
         model = Documento
@@ -26,14 +18,13 @@ class DocumentoForm(forms.ModelForm):
     def clean_archivo(self):
         archivo = self.cleaned_data.get('archivo')
         if archivo:
-            # Validación de tamaño (100 MB máx)
-            max_tamaño = 100 * 1024 * 1024
+            max_tamaño = 100 * 1024 * 1024  # 100 MB
             if archivo.size > max_tamaño:
                 raise forms.ValidationError("El archivo supera el tamaño máximo de 100 MB.")
 
             content_type = archivo.content_type
 
-            # Conversión de .heic/.heif a .jpg
+
             if content_type in ['image/heic', 'image/heif'] or archivo.name.lower().endswith(('.heic', '.heif')):
                 try:
                     imagen = Image.open(archivo)
@@ -52,49 +43,21 @@ class DocumentoForm(forms.ModelForm):
 
                 except Exception as e:
                     raise forms.ValidationError(f"Error al convertir HEIC: {str(e)}")
-
             else:
-                # Tipos MIME permitidos
                 tipos_permitidos = [
                     'application/pdf',
                     'image/jpeg', 'image/png', 'image/webp',
-                    'application/msword',  # .doc (viejo Word)
-                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # .docx
-                    'application/vnd.ms-excel',  # .xls
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',  # .xlsx
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'application/vnd.ms-excel',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     'video/mp4', 'video/webm', 'video/ogg',
                 ]
-
                 if content_type not in tipos_permitidos:
                     raise forms.ValidationError(f"Tipo de archivo no permitido: {content_type}")
 
         return self.cleaned_data['archivo']
 
-# ------------------------------
-# Formulario de registro de usuarios
-# ------------------------------
-TIPO_CUENTA_CHOICES = [
-    ('personal', 'Personal'),
-    ('profesional', 'Profesional'),
-    ('empresarial', 'Empresarial'),
-]
-
-class RegistroUsuarioForm(UserCreationForm):
-    email = forms.EmailField(required=True, label='Correo electrónico')
-    first_name = forms.CharField(label='Nombre completo')
-    tipo_cuenta = forms.ChoiceField(
-        choices=TIPO_CUENTA_CHOICES,
-        label='Tipo de cuenta',
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
-    class Meta:
-        model = User
-        fields = ['first_name', 'email', 'username', 'password1', 'password2']
-
-# ------------------------------
-# Formulario para generar enlace con fecha de expiración
-# ------------------------------
 class EnlacePublicoForm(forms.ModelForm):
     class Meta:
         model = Documento
@@ -112,57 +75,3 @@ class EnlacePublicoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['fecha_expiracion'].input_formats = ['%Y-%m-%dT%H:%M']
-
-
-
-# ------------------------------
-# Formulario de edicion del perfil de usuario
-# ------------------------------
-class PerfilUsuarioForm(forms.ModelForm):
-    email = forms.EmailField(label='Correo electrónico')
-
-    class Meta:
-        model = PerfilUsuario
-        fields = ['tipo_cuenta']
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-        if user:
-            self.fields['email'].initial = user.email
-
-
-
-
-# ------------------------------
-# Formulario de contacto 
-# ------------------------------
-class FormularioContactoForm(forms.Form):
-    nombre = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
-        'class': 'form-control',
-        'placeholder': 'Tu nombre'
-    }))
-    email = forms.EmailField(widget=forms.EmailInput(attrs={
-        'class': 'form-control',
-        'placeholder': 'Tu correo electrónico'
-    }))
-    mensaje = forms.CharField(widget=forms.Textarea(attrs={
-        'class': 'form-control',
-        'placeholder': 'Escribe tu mensaje aquí',
-        'rows': 5
-    }))
-
-
-
-# ------------------------------
-# Formulario de  recordatorio
-# ------------------------------
-
-class RecordatorioForm(forms.ModelForm):
-    class Meta:
-        model = Recordatorio
-        fields = ['titulo', 'fecha_recordatorio']
-        widgets = {
-            'fecha_recordatorio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-        }
