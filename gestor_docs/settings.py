@@ -76,22 +76,29 @@ CONTENT_SECURITY_POLICY = {
         "style-src": (
             "'self'",
             'https://fonts.googleapis.com',
-            'https://cdn.jsdelivr.net',    # ✅ Bootstrap CSS
-            "'unsafe-inline'",
+            'https://cdn.jsdelivr.net',
+            'https://cdnjs.cloudflare.com',
+            'https://unpkg.com',
+            "'unsafe-inline'",   # permite inline CSS
         ),
         "font-src": (
             "'self'",
             'https://fonts.gstatic.com',
+            'https://cdn.jsdelivr.net',
+            'https://cdnjs.cloudflare.com',
         ),
         "script-src": (
             "'self'",
-            'https://cdn.jsdelivr.net',     # ✅ Bootstrap JS
+            'https://cdn.jsdelivr.net',
+            'https://cdnjs.cloudflare.com',
+            'https://unpkg.com',
             'https://www.google.com',
             'https://www.gstatic.com',
-            "'unsafe-inline'",
+            "'unsafe-inline'",   # permite inline JS
         ),
     }
 }
+
 
 
 
