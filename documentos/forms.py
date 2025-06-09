@@ -52,6 +52,7 @@ class DocumentoForm(forms.ModelForm):
                     'application/vnd.ms-excel',
                     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     'video/mp4', 'video/webm', 'video/ogg',
+                    'text/plain', 'text/csv', 'text/html', 'text/xml', 'application/json', 'application/zip', 'application/x-rar-compressed', 'application/gzip', 'application/x-7z-compressed', 'application/x-tar', 'application/x-bzip2', 'application/x-xz', 'application/x-lzma'
                 ]
                 if content_type not in tipos_permitidos:
                     raise forms.ValidationError(f"Tipo de archivo no permitido: {content_type}")
