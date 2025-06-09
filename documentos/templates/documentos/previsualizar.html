@@ -35,12 +35,26 @@
     text-align: center;
   }
 
-  .document-image {
+  .document-image, video {
     max-width: 100%;
     max-height: 80vh;
     display: block;
     margin: 0 auto;
     box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  }
+
+  .document-text {
+    text-align: left;
+    white-space: pre-wrap; /* Mantiene saltos de línea */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    max-height: 80vh;
   }
 
   .badge-tag {
@@ -117,29 +131,30 @@
     <a href="{{ documento.archivo.url }}" target="_blank" class="btn btn-primary">📄 Ver documento en pestaña nueva</a>
   </div>
 {% elif es_imagen %}
-  <div class="viewer-container text-center">
+  <div class="viewer-container">
     <img src="{{ documento.archivo.url }}" alt="{{ documento.nombre }}" class="document-image img-fluid">
   </div>
-  {% elif es_video %}
-  <div class="viewer-container text-center">
-    <video controls width="100%" height="auto" style="max-height: 80vh;">
+{% elif es_video %}
+  <div class="viewer-container">
+    <video controls>
       <source src="{{ documento.archivo.url }}" type="video/mp4">
       Tu navegador no soporta la reproducción de video.
     </video>
+  </div>
+{% elif es_texto %}
+  <div class="viewer-container">
+    <div class="document-text">
+      {{ contenido_texto }}
+    </div>
   </div>
 {% else %}
   <div class="error-box">
     <h3>Formato no soportado para previsualización</h3>
     <p>Este tipo de archivo no puede mostrarse directamente en el navegador.</p>
-
     <div class="actions">
       <a href="{{ documento.archivo.url }}" download class="btn btn-success">⬇️ Descargar archivo</a>
     </div>
-
-    <a href="{{ documento.archivo.url }}" target="_blank" class="btn btn-outline-primary">
-        🌐 Abrir en nueva pestaña
-    </a>
-
+    <a href="{{ documento.archivo.url }}" target="_blank" class="btn btn-primary">🌐 Abrir en nueva pestaña</a>
   </div>
 {% endif %}
 
@@ -148,7 +163,7 @@
   <a href="{{ documento.archivo.url }}" download class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">⬇️ Descargar</a>
 
   {% if documento.enlace_publico %}
-    <!-- <button class="btn btn-primary" onclick="copiarEnlace()">🔗 Copiar enlace público</button> -->
+    <!-- Botón de copiar enlace, si quieres -->
   {% endif %}
 
   <a href="{% url 'documentos:generar_enlace' doc_id=documento.id %}" class="btn btn-light text-dark fw-semibold d-flex align-items-center justify-content-center">

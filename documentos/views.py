@@ -67,10 +67,16 @@ def previsualizar_documento(request, documento_id):
     es_video = mimetype and mimetype.startswith('video/')
     es_docx = mimetype == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     es_xlsx = mimetype == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    es_texto = mimetype == 'text/plain'
     archivo_url_absoluto = request.build_absolute_uri(documento.archivo.url)
 
     contenido_docx = [p.text for p in docx.Document(documento.archivo.path).paragraphs if p.text.strip()] if es_docx else None
     contenido_xlsx = list(openpyxl.load_workbook(documento.archivo.path).active.iter_rows(values_only=True)) if es_xlsx else None
+    contenido_texto = None
+
+    if es_texto:
+        with open(documento.archivo.path, 'r', encoding='utf-8', errors='ignore') as f:
+            contenido_texto = f.read()
 
     return render(request, 'documentos/previsualizar.html', {
         'documento': documento,
@@ -79,10 +85,13 @@ def previsualizar_documento(request, documento_id):
         'es_video': es_video,
         'es_docx': es_docx,
         'es_xlsx': es_xlsx,
+        'es_texto': es_texto,
         'contenido_docx': contenido_docx,
         'contenido_xlsx': contenido_xlsx,
+        'contenido_texto': contenido_texto,
         'archivo_url_absoluto': archivo_url_absoluto,
     })
+
 
 @require_POST
 @login_required
