@@ -70,25 +70,29 @@ if not DEBUG:
     # Clickjacking Protection
     X_FRAME_OPTIONS = 'DENY'
 
-    # Content Security Policy (CSP)
-    CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = (
-    "'self'",
-    'https://fonts.googleapis.com',
-    'https://cdn.jsdelivr.net',      # ✅ Para Bootstrap CSS
-    "'unsafe-inline'",
-)
-CSP_FONT_SRC = (
-    "'self'",
-    'https://fonts.gstatic.com',
-)
-CSP_SCRIPT_SRC = (
-    "'self'",
-    'https://cdn.jsdelivr.net',      # ✅ Para Bootstrap JS
-    'https://www.google.com',
-    'https://www.gstatic.com',
-    "'unsafe-inline'",
-)
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": ("'self'",),
+        "style-src": (
+            "'self'",
+            'https://fonts.googleapis.com',
+            'https://cdn.jsdelivr.net',    # ✅ Bootstrap CSS
+            "'unsafe-inline'",
+        ),
+        "font-src": (
+            "'self'",
+            'https://fonts.gstatic.com',
+        ),
+        "script-src": (
+            "'self'",
+            'https://cdn.jsdelivr.net',     # ✅ Bootstrap JS
+            'https://www.google.com',
+            'https://www.gstatic.com',
+            "'unsafe-inline'",
+        ),
+    }
+}
+
 
 
 # Referrer Policy
