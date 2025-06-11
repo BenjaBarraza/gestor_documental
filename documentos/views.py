@@ -182,3 +182,9 @@ def eliminar_enlace_publico(request, doc_id):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+
+
+
+
+    
