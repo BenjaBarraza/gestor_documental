@@ -42,6 +42,9 @@ EMAIL_HOST_PASSWORD = 'iqjpdwxplkwnbqoo'  # clave de 16 dígitos
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+EMAIL_TEMPLATE_NAME = 'usuarios/password_reset_email.html'
+
+
 
 # settings.py
 
@@ -268,5 +271,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 
