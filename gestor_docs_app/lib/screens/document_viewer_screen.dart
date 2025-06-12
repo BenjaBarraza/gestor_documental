@@ -26,7 +26,7 @@ class DocumentViewerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fullUrl = 'http://192.168.18.177:8000$url';
+    final fullUrl = 'https://gestor-documental-c1tp.onrender.com$url';
 
 
     return Scaffold(

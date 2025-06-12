@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\gestor_documental\venv"
+VIRTUAL_ENV="C:\Users\benja\OneDrive\Escritorio\gestor_documental\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

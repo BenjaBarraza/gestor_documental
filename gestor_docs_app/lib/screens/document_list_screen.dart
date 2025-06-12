@@ -28,7 +28,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access');
 
-    final url = Uri.parse('http://192.168.18.177:8000/api/documentos/');
+    final url = Uri.parse('https://gestor-documental-c1tp.onrender.com/api/documentos/');
 
 
     try {

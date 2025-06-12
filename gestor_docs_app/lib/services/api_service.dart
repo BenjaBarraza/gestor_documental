@@ -4,7 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // ✅ IP local en lugar de localhost
-  static const String baseUrl = 'http://192.168.18.177:8000/api';
+  static const String baseUrl = 'https://gestor-documental-c1tp.onrender.com/api';
+
 
   static Future<Map<String, dynamic>> login(String username, String password) async {
     final url = Uri.parse('$baseUrl/token/');
