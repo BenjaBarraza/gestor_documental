@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import DocumentosUsuarioView
 
 app_name = 'documentos'
 
@@ -13,4 +14,8 @@ urlpatterns = [
     path('mis-enlaces/', views.mis_enlaces, name='mis_enlaces'),
     path('eliminar-enlace/<int:doc_id>/', views.eliminar_enlace_publico, name='eliminar_enlace_publico'),
     path('generar-enlace/<int:doc_id>/', views.generar_enlace, name='generar_enlace'),
+
+
+    # API endpoints
+    path('api/documentos/', DocumentosUsuarioView.as_view(), name='documentos_usuario'),
 ]

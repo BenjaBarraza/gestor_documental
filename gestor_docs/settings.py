@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-ALLOWED_HOSTS = ['gestor-documental-c1tp.onrender.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['gestor-documental-c1tp.onrender.com', '127.0.0.1', 'localhost', '192.168.18.177']
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -161,6 +161,11 @@ INSTALLED_APPS = [
     'documentos',
     'widget_tweaks',
     'csp',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'api',
+    
 
     # Mis apps
     'usuarios',
@@ -171,7 +176,15 @@ INSTALLED_APPS = [
     'recordatorios',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -180,9 +193,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
-
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+
 
 ROOT_URLCONF = 'gestor_docs.urls'
 

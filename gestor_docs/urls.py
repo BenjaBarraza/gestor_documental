@@ -18,6 +18,12 @@ urlpatterns = [
 
     # 🆕 Esta es la raíz
     path('', home, name='home'),
+
+    # 🆕 Aquí incluimos las URLs de la API
+    path('api/', include('api.urls')),  # Ahora /api/token/ funcionará
+
+    # 🆕 Aquí incluimos las URLs de documentos
+    path('', include('documentos.urls')), 
 ]
 
 if settings.DEBUG:

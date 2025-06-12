@@ -13,6 +13,10 @@ from django.views.decorators.http import require_POST
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string 
 import uuid
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import DocumentoSerializer
 
 
 
@@ -184,7 +188,14 @@ def eliminar_enlace_publico(request, doc_id):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
     
 
+# API para obtener documentos del usuario autenticado
+class DocumentosUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        documentos = Documento.objects.filter(usuario=request.user)
+        serializer = DocumentoSerializer(documentos, many=True)
+        return Response(serializer.data)
 
 
     
