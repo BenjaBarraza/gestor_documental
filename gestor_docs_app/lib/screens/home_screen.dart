@@ -84,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -95,18 +96,27 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             DrawerHeader(
               decoration: const BoxDecoration(color: Colors.deepPurple),
-              child: Center(
-                child: loadingUser
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(
-                        username != null
-                            ? 'Hola, $username'
-                            : 'Usuario desconocido',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white,
+                    child: Text("👤", style: TextStyle(fontSize: 28)),
+                  ),
+                  const SizedBox(height: 12),
+                  loadingUser
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          username != null
+                              ? 'Hola, $username'
+                              : 'Usuario desconocido',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
+                ],
               ),
             ),
             ListTile(
@@ -134,10 +144,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: Center(
-        child: Text(
-          "Bienvenido, usuario autenticado.",
-          style: textTheme.bodyMedium?.copyWith(fontSize: 18),
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF0E0E10), Color(0xFF1F1F25)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.description_rounded, size: 80, color: Colors.deepPurpleAccent),
+            const SizedBox(height: 24),
+            loadingUser
+            ? const CircularProgressIndicator(color: Colors.white)
+            : Text(
+                username != null
+                  ? "¡Hola $username! ¿Listo para gestionar tus documentos?"
+                  : "¡Hola! ¿Listo para gestionar tus documentos?",
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+          ],
         ),
       ),
     );
