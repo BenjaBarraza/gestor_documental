@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import '../services/api_service.dart';
 
 class DocumentViewerScreen extends StatelessWidget {
   final String nombre;
@@ -26,7 +27,8 @@ class DocumentViewerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fullUrl = 'https://gestor-documental-c1tp.onrender.com$url';
+    // Usa el host base del entorno actual
+    final fullUrl = '${ApiService.baseUrl.replaceFirst("/api", "")}$url';
 
 
     return Scaffold(

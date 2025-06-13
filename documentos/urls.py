@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from .views import DocumentosUsuarioView
 
+
 app_name = 'documentos'
 
 urlpatterns = [
@@ -18,4 +19,6 @@ urlpatterns = [
 
     # API endpoints
     path('api/documentos/', DocumentosUsuarioView.as_view(), name='documentos_usuario'),
+
+    
 ]

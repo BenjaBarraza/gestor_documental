@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'home_screen.dart';
+import 'register_screen.dart'; 
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,32 +12,36 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  String error = '';
-  bool loading = false;
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _loading = false;
+  String? _errorMessage;
 
   void _login() async {
+    if (!_formKey.currentState!.validate()) return;
+
     setState(() {
-      loading = true;
-      error = '';
+      _loading = true;
+      _errorMessage = null;
     });
 
-    final result = await ApiService.login(
+    final response = await ApiService.login(
       _usernameController.text,
       _passwordController.text,
     );
 
-    if (result['ok']) {
+    setState(() {
+      _loading = false;
+    });
+
+    if (response['ok']) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     } else {
       setState(() {
-        error = result['message'] ?? 'Error desconocido';
-        loading = false;
+        _errorMessage = response['message'] ?? 'Error desconocido';
       });
     }
   }
@@ -44,37 +49,94 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0E0E10),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("Iniciar sesión en GestorDocs", style: TextStyle(fontSize: 24)),
-                const SizedBox(height: 24),
+                const Text(
+                  'Iniciar sesión en GestorDocs',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
                 TextFormField(
                   controller: _usernameController,
-                  decoration: const InputDecoration(labelText: 'Usuario'),
-                  validator: (value) => value!.isEmpty ? 'Ingrese su usuario' : null,
+                  decoration: InputDecoration(
+                    hintText: 'Usuario',
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Ingrese su usuario' : null,
                 ),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Contraseña'),
                   obscureText: true,
-                  validator: (value) => value!.isEmpty ? 'Ingrese su contraseña' : null,
+                  decoration: InputDecoration(
+                    hintText: 'Contraseña',
+                    filled: true,
+                    fillColor: Colors.white10,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Ingrese su contraseña' : null,
+                ),
+                const SizedBox(height: 24),
+                if (_errorMessage != null)
+                  Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.redAccent),
+                    textAlign: TextAlign.center,
+                  ),
+                if (_errorMessage != null) const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _loading ? null : _login,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      backgroundColor: Colors.deepPurpleAccent,
+                    ),
+                    child: _loading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Iniciar sesión',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                  ),
                 ),
                 const SizedBox(height: 16),
-                if (error.isNotEmpty) Text(error, style: const TextStyle(color: Colors.red)),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: loading ? null : () {
-                    if (_formKey.currentState!.validate()) _login();
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                    );
                   },
-                  child: loading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Iniciar sesión"),
+                  child: const Text(
+                    '¿No tienes cuenta? Regístrate',
+                    style: TextStyle(color: Colors.white70),
+                  ),
                 ),
               ],
             ),

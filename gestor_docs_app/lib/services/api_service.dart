@@ -2,10 +2,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ApiService {
-  // ✅ IP local en lugar de localhost
-  static const String baseUrl = 'https://gestor-documental-c1tp.onrender.com/api';
+enum Modo { localWifi, localEmulador, produccion }
 
+class ApiService {
+  // Cambia solo esta línea:
+  static const Modo modo = Modo.localWifi;
+
+  static final String baseUrl = switch (modo) {
+    Modo.localWifi => 'http://192.168.18.173:8000/api',
+    Modo.localEmulador => 'http://localhost:8000/api',
+    Modo.produccion => 'https://gestor-documental-c1tp.onrender.com/api',
+  };
 
   static Future<Map<String, dynamic>> login(String username, String password) async {
     final url = Uri.parse('$baseUrl/token/');
@@ -24,7 +31,7 @@ class ApiService {
         return {'ok': true};
       } else {
         final data = jsonDecode(response.body);
-        return {'ok': false, 'message': data['detail']};
+        return {'ok': false, 'message': data['detail'] ?? 'Credenciales inválidas'};
       }
     } catch (e) {
       return {'ok': false, 'message': 'Error de red: $e'};

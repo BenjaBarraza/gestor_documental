@@ -188,6 +188,8 @@ def eliminar_enlace_publico(request, doc_id):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
     
 
+    
+
 # API para obtener documentos del usuario autenticado
 class DocumentosUsuarioView(APIView):
     permission_classes = [IsAuthenticated]
