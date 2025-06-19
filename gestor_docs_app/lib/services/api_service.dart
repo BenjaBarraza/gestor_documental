@@ -6,12 +6,12 @@ enum Modo { localWifi, localEmulador, produccion }
 
 class ApiService {
   // Cambia solo esta línea:
-  // static const Modo modo = Modo.localWifi;
+   static const Modo modo = Modo.localWifi;
   //static const Modo modo = Modo.localEmulador;
-  static const Modo modo = Modo.produccion;
+  //static const Modo modo = Modo.produccion;
 
   static final String baseUrl = switch (modo) {
-    Modo.localWifi => 'http://192.168.18.173:8000/api',
+    Modo.localWifi => 'http://192.168.18.119:8000/api',
     Modo.localEmulador => 'http://localhost:8000/api',
     Modo.produccion => 'https://gestor-documental-c1tp.onrender.com/api',
   };
