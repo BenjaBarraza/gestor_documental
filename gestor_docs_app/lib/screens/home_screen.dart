@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import '../services/api_service.dart';
 import 'login_screen.dart';
 import 'document_list_screen.dart';
 import 'profile_screen.dart';
+import 'subir_documento_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,11 +18,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String? username;
   bool loadingUser = true;
+  bool animateIcon = false;
 
   @override
   void initState() {
     super.initState();
     _fetchUsername();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) setState(() => animateIcon = true);
+    });
   }
 
   Future<void> _fetchUsername() async {
@@ -81,6 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _goToSubirDocumento() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SubirDocumentoScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -102,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.white,
-                    child: Text("👤", style: TextStyle(fontSize: 28)),
+                    child: Icon(Icons.person, size: 30, color: Colors.deepPurple),
                   ),
                   const SizedBox(height: 12),
                   loadingUser
@@ -135,6 +146,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 _goToPerfil();
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.upload_file),
+              title: const Text("Subir documento"),
+              onTap: () {
+                Navigator.pop(context);
+                _goToSubirDocumento();
+              },
+            ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
@@ -156,20 +175,46 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.description_rounded, size: 80, color: Colors.deepPurpleAccent),
-            const SizedBox(height: 24),
-            loadingUser
-            ? const CircularProgressIndicator(color: Colors.white)
-            : Text(
-                username != null
-                  ? "¡Hola $username! ¿Listo para gestionar tus documentos?"
-                  : "¡Hola! ¿Listo para gestionar tus documentos?",
-                textAlign: TextAlign.center,
-                style: textTheme.bodyMedium?.copyWith(
-                  fontSize: 18,
-                  color: Colors.white,
+            AnimatedSlide(
+              offset: animateIcon ? Offset.zero : const Offset(0, 0.3),
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeOut,
+              child: AnimatedOpacity(
+                opacity: animateIcon ? 1 : 0,
+                duration: const Duration(milliseconds: 800),
+                child: AnimatedScale(
+                  scale: animateIcon ? 1 : 0.85,
+                  duration: const Duration(milliseconds: 600),
+                  child: const Icon(
+                    Icons.description_rounded,
+                    size: 80,
+                    color: Colors.deepPurpleAccent,
+                  ),
                 ),
               ),
+            ),
+            const SizedBox(height: 24),
+            Card(
+              elevation: 4,
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              color: Colors.deepPurple.withOpacity(0.1),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: loadingUser
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                        username != null
+                            ? "👋 ¡Bienvenido $username!\nGestiona tus archivos y comparte con seguridad."
+                            : "👋 ¡Hola!\nGestiona tus archivos y comparte con seguridad.",
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+              ),
+            ),
           ],
         ),
       ),

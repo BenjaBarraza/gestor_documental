@@ -27,9 +27,9 @@ class DocumentViewerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Usa el host base del entorno actual
-    final fullUrl = '${ApiService.baseUrl.replaceFirst("/api", "")}$url';
-
+    final fullUrl = url.startsWith('http')
+        ? url
+        : '${ApiService.baseUrl.replaceFirst('/api', '')}$url';
 
     return Scaffold(
       appBar: AppBar(title: Text(nombre)),

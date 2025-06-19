@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
-from .views import DocumentosUsuarioView
+#from .views import DocumentosUsuarioView
+from .views import DocumentoDeleteAPIView
 
 
 app_name = 'documentos'
@@ -18,7 +19,11 @@ urlpatterns = [
 
 
     # API endpoints
-    path('api/documentos/', DocumentosUsuarioView.as_view(), name='documentos_usuario'),
+    #path('api/documentos/', DocumentosUsuarioView.as_view(), name='documentos_usuario'),
+
+
+    # API borrar documento
+    path('api/documentos/<int:doc_id>/eliminar/', DocumentoDeleteAPIView.as_view(), name='eliminar_documento_api'),
 
     
 ]

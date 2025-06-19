@@ -3,8 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
-import 'document_viewer_screen.dart';
 import '../services/api_service.dart';
+import 'document_viewer_screen.dart';
 
 class DocumentListScreen extends StatefulWidget {
   const DocumentListScreen({super.key});
@@ -16,7 +16,7 @@ class DocumentListScreen extends StatefulWidget {
 class _DocumentListScreenState extends State<DocumentListScreen> {
   List documentos = [];
   bool loading = true;
-  String? error;
+  String error = '';
 
   @override
   void initState() {
@@ -25,24 +25,15 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   }
 
   Future<void> fetchDocumentos() async {
+    setState(() {
+      loading = true;
+      error = '';
+    });
+
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access');
-    
-
-
-    if (token == null) {
-      setState(() {
-        error = 'No has iniciado sesión.';
-        loading = false;
-      });
-      return;
-    }
-
     final url = Uri.parse('${ApiService.baseUrl}/documentos/');
-    print('URL final: ${ApiService.baseUrl}/documentos/');
 
-
-    
     try {
       final res = await http.get(
         url,
@@ -55,10 +46,6 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
           documentos = decoded;
           loading = false;
         });
-      } else if (res.statusCode == 401) {
-        await prefs.clear();
-        if (!mounted) return;
-        Navigator.pushReplacementNamed(context, '/login');
       } else {
         setState(() {
           error = 'Error ${res.statusCode}: ${res.reasonPhrase}';
@@ -73,25 +60,67 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     }
   }
 
-  Future<void> _abrirDocumento(String ruta) async {
-    final Uri url = Uri.parse('http://localhost:8000$ruta');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+  Future<void> _eliminarDocumento(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access');
+    final url = Uri.parse('${ApiService.baseUrl}/documentos/$id/eliminar/');
+
+    final res = await http.delete(
+      url,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (res.statusCode == 204) {
+      setState(() {
+        documentos.removeWhere((doc) => doc['id'] == id);
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudo abrir el documento')),
+        const SnackBar(content: Text('Documento eliminado')),
       );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al eliminar el documento')),
+      );
+    }
+  }
+
+  Future<void> _confirmarEliminacion(int id) async {
+    final confirm = await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('¿Eliminar documento?'),
+        content: const Text('Esta acción no se puede deshacer.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Eliminar')),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await _eliminarDocumento(id);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mis documentos')),
+      appBar: AppBar(
+        title: const Text('Mis documentos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Recargar',
+            onPressed: fetchDocumentos,
+          ),
+        ],
+      ),
       body: loading
           ? const Center(child: CircularProgressIndicator())
-          : error != null
-              ? Center(child: Text(error!, style: const TextStyle(color: Colors.redAccent)))
+          : error.isNotEmpty
+              ? Center(child: Text(error, style: const TextStyle(color: Colors.redAccent)))
               : documentos.isEmpty
-                  ? const Center(child: Text('Aún no tienes documentos.'))
+                  ? const Center(child: Text('No hay documentos subidos aún'))
                   : ListView.builder(
                       itemCount: documentos.length,
                       itemBuilder: (context, index) {
@@ -99,7 +128,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                         return ListTile(
                           leading: const Icon(Icons.insert_drive_file),
                           title: Text(doc['nombre']),
-                          subtitle: Text('Tamaño: ${doc['size']} KB'),
+                          subtitle: Text('Tamaño: ${doc['size'] ?? 0} KB'),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -111,6 +140,10 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                               ),
                             );
                           },
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.redAccent),
+                            onPressed: () => _confirmarEliminacion(doc['id']),
+                          ),
                         );
                       },
                     ),

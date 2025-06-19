@@ -6,7 +6,9 @@ enum Modo { localWifi, localEmulador, produccion }
 
 class ApiService {
   // Cambia solo esta línea:
-  static const Modo modo = Modo.localWifi;
+  // static const Modo modo = Modo.localWifi;
+  static const Modo modo = Modo.localEmulador;
+  //static const Modo modo = Modo.produccion;
 
   static final String baseUrl = switch (modo) {
     Modo.localWifi => 'http://192.168.18.173:8000/api',

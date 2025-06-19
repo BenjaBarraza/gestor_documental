@@ -17,6 +17,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import DocumentoSerializer
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from rest_framework import generics
+
 
 
 
@@ -186,18 +191,32 @@ def eliminar_enlace_publico(request, doc_id):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    
 
     
 
 # API para obtener documentos del usuario autenticado
-class DocumentosUsuarioView(APIView):
+class DocumentoViewSet(ModelViewSet):
+    queryset = Documento.objects.all()
+    serializer_class = DocumentoSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        documentos = Documento.objects.filter(usuario=request.user)
-        serializer = DocumentoSerializer(documentos, many=True)
-        return Response(serializer.data)
+    def perform_create(self, serializer):
+        serializer.save(usuario=self.request.user)
 
 
-    
+
+# API para eliminar un documento específico del usuario autenticado
+class DocumentoDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, doc_id):
+        try:
+            documento = Documento.objects.get(id=doc_id, usuario=request.user)
+            documento.archivo.delete()  # Borra el archivo del sistema de archivos
+            documento.delete()
+            return Response({'message': 'Documento eliminado'}, status=status.HTTP_204_NO_CONTENT)
+        except Documento.DoesNotExist:
+            return Response({'error': 'No encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
