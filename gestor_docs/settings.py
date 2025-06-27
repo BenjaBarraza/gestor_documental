@@ -16,9 +16,7 @@ import os
 from django.contrib.messages import constants as messages
 from django.urls import reverse_lazy
 
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -161,8 +159,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'api',
-    'cloudinary',
-    'cloudinary_storage',
+
 
     
 
@@ -281,8 +278,8 @@ LOGOUT_REDIRECT_URL = reverse_lazy('documentos:home')             # ✅ Logout t
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#MEDIA_URL = '/media/'
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -295,10 +292,3 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 
-# Cloudinary
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-}
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
