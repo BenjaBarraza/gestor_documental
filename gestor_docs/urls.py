@@ -28,6 +28,7 @@ urlpatterns = [
     # 🆕 Aquí incluimos las URLs de la API de documentos
     path('api/', include('documentos.api_urls')),
 
+
 ]
 
 if settings.DEBUG:

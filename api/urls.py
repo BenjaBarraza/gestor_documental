@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import perfil_usuario
 from .views import RegisterView
+from .views import PerfilAPIView
 
 # api/urls.py
 urlpatterns = [
