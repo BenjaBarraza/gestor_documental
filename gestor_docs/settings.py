@@ -15,9 +15,7 @@ from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
 from django.urls import reverse_lazy
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -58,7 +56,7 @@ RECAPTCHA_SECRET_KEY = config('RECAPTCHA_SECRET_KEY')
 
 
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 
 # Security settings
@@ -160,8 +158,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'api',
-    'cloudinary',
-    'cloudinary_storage',
+
     
 
     # Mis apps
@@ -279,18 +276,14 @@ LOGOUT_REDIRECT_URL = reverse_lazy('documentos:home')             # ✅ Logout t
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#MEDIA_URL = '/media/'
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-# Cloudinary settings
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': config('CLOUDINARY_API_KEY'),
-    'API_SECRET': config('CLOUDINARY_API_SECRET'),
-}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
