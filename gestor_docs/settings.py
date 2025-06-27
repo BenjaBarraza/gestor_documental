@@ -161,6 +161,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'api',
     'cloudinary',
+    'cloudinary_storage',
     
 
     # Mis apps
@@ -278,8 +279,8 @@ LOGOUT_REDIRECT_URL = reverse_lazy('documentos:home')             # ✅ Logout t
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
