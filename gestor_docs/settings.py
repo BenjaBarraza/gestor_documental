@@ -295,10 +295,10 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 
+# Cloudinary
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dfhrv2s4n',
-    'API_KEY': '282395851542986',
-    'API_SECRET': 'Va40OMWc0JfznJY50QtimaxDq3E'
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
-
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
