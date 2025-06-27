@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-ALLOWED_HOSTS = ['gestor-documental-c1tp.onrender.com', '127.0.0.1', 'localhost', '192.168.18.173']
+ALLOWED_HOSTS = ['gestor-documental-c1tp.onrender.com', '127.0.0.1', 'localhost', '192.168.18.119']
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
