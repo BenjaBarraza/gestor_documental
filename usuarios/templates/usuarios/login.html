@@ -4,6 +4,7 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -217,6 +218,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -229,13 +231,14 @@
                 padding: 30px 20px;
                 margin: 10px;
             }
-            
+
             .logo-text {
                 font-size: 24px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="header">
@@ -248,17 +251,17 @@
         </div>
 
         {% if form.errors %}
-            <div class="form-group">
-                <div class="form-input" style="border-color: #e53e3e; background: #fed7d7;">
-                    Usuario o contraseña incorrectos.
-                </div>
+        <div class="form-group">
+            <div class="form-input" style="border-color: #e53e3e; background: #fed7d7;">
+                Usuario o contraseña incorrectos.
             </div>
+        </div>
         {% endif %}
 
         <form method="post" action="{% url 'usuarios:login' %}">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_username" class="form-label">Nombre de usuario</label>
+                <label for="id_username" class="form-label">Nombre de usuari</label>
                 {{ form.username|add_class:"form-input" }}
             </div>
 
@@ -285,4 +288,5 @@
         </div>
     </div>
 </body>
+
 </html>
